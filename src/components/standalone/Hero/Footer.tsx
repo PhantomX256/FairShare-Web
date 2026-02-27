@@ -1,4 +1,4 @@
-import {GITHUB_URL, LINKEDIN_URL} from "../../../lib/constants.ts";
+import {GITHUB_URL, LINKEDIN_URL} from "../../../lib/constants/constants.ts";
 
 function Footer() {
     return (

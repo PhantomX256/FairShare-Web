@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 function HeroSection() {
     return (
         <section
@@ -10,12 +12,12 @@ function HeroSection() {
                 The easiest way to share expenses with roommates and friends.
                 Keep track of balances, scan receipts, and settle up in seconds directly from your browser.
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-4 mb-20">
+            <Link to="/auth" className="flex flex-col sm:flex-row items-center gap-4 mb-20">
                 <button
-                    className="h-12 px-10 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-colors shadow-lg shadow-white/5 transform hover:scale-105 duration-200">
+                    className="h-12 px-10 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-all shadow-lg shadow-white/5 transform hover:scale-105 duration-200">
                     Get Started
                 </button>
-            </div>
+            </Link>
             <div className="relative w-full max-w-5xl aspect-16/10 mx-auto perspective-[2000px] group">
                 <div className="absolute inset-0 -inset-y-20 bg-primary/20 blur-[100px] rounded-full opacity-40"></div>
                 <div

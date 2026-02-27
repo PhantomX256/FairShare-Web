@@ -11,6 +11,8 @@ const config: Config = {
                 "background-dark": "#050505",
                 "surface-dark": "#121212",
                 glass: "rgba(255, 255, 255, 0.05)",
+                "card-dark": "#16161a",
+                "border-dark": "#2a2a30",
             },
             fontFamily: {
                 display: ["Inter", "sans-serif"],

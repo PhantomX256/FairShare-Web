@@ -10,6 +10,10 @@ html {
     box-sizing: border-box;
 }
 
+button {
+    cursor: pointer;
+}
+
 /* Scroll Bar Styles */
 ::-webkit-scrollbar {
     width: 8px;
@@ -56,4 +60,16 @@ html {
 }
 .animated-gradient {
     background: radial-gradient(circle at 50% 50%, rgba(19, 55, 236, 0.15), transparent 60%);
+}
+
+.glass-sidebar {
+    background: rgba(16, 16, 20, 0.8);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+    background: rgba(22, 22, 26, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
