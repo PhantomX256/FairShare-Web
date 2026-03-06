@@ -5,7 +5,7 @@ import App from './App.tsx'
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import {GOOGLE_CLIENT_ID} from "./lib/constants/constants.ts";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ToastProvider} from "./components/context/ToastProvider.tsx";
+import {ToastProvider} from "./components/provider/ToastProvider.tsx";
 import Toast from "./components/shared/Toast.tsx";
 
 // If in case important environment variables are missing,
