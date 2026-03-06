@@ -1,0 +1,1 @@
+export const GOOGLE_AUTH_URL = "/auth/google";

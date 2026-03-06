@@ -1,9 +1,9 @@
 import {GoogleLogin} from "@react-oauth/google";
-import axios from "axios";
-import {BACKEND_URL} from "../../../lib/constants/constants.ts";
-import {redirect} from "react-router-dom";
+import {useAuthenticateWithGoogle} from "../../../lib/hooks/auth.hooks.ts";
 
 function AuthCard() {
+    const { mutate: authenticateWithGoogle } = useAuthenticateWithGoogle();
+
     return (
         <div className="glass-card rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center">
             <div className="mb-8">
@@ -19,9 +19,10 @@ function AuthCard() {
             </div>
             <div className="w-full flex-row items-center justify-center space-y-6">
                 <GoogleLogin
-                    onSuccess={async (credentialResponse) => {
-                        await axios.post(`${BACKEND_URL}/api/auth/google`, { credential: credentialResponse.credential });
-                        redirect("/dashboard");
+                    onSuccess={(credentialResponse) => {
+                        if (credentialResponse.credential) {
+                            authenticateWithGoogle(credentialResponse.credential);
+                        }
                     }}
                     width="300"
                 />

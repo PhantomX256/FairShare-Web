@@ -28,3 +28,9 @@ export const DASHBOARD_SIDEBAR_TABS = [
 export const GOOGLE_CLIENT_ID: string = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
+
+export enum ERROR_SEVERITY {
+    TOAST = "toast",
+    LOG = "log",
+    FATAL = "fatal"
+}
