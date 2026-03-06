@@ -29,8 +29,10 @@ export const GOOGLE_CLIENT_ID: string = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-export enum ERROR_SEVERITY {
-    TOAST = "toast",
-    LOG = "log",
-    FATAL = "fatal"
-}
+export const ERROR_SEVERITY = {
+    TOAST: "toast",
+    LOG: "log",
+    FATAL: "fatal"
+} as const;
+
+export type ERROR_SEVERITY = typeof ERROR_SEVERITY[keyof typeof ERROR_SEVERITY];

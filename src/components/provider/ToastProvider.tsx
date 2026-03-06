@@ -1,4 +1,4 @@
-import {type ReactNode, useState} from "react";
+import {type ReactNode, useRef, useState} from "react";
 import {ToastContext} from "../context/ToastContext";
 
 interface Toast {
@@ -9,9 +9,10 @@ interface Toast {
 
 export function ToastProvider({children}: { children: ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
+    const idRef = useRef(0);
 
     function toast(message: string, success: boolean) {
-        const id = Date.now();
+        const id = ++idRef.current;
         setToasts((prev) => [...prev, {id, message, success}]);
         setTimeout(() => dismiss(id), 4000);
     }
