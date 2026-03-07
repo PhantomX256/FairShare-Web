@@ -1,235 +1,213 @@
-# FairShare Frontend — AGENTS.md (Living Project Snapshot)
-
+﻿# FairShare Frontend — AGENTS.md (Living Project Snapshot)
 This document is the **handoff + rules-of-the-road** for the FairShare frontend.
-
 ## Purpose (read this first)
 - **Single source of truth** for what exists in this repo right now (structure, routes, components, styling, conventions).
 - **Update cadence:** Anytime you add/move/rename a page/component, change routing, add a new library, or introduce a new convention, update this file in the same change.
 - **Audience:** You (future you) + any AI assistant. It should be understandable in <2 minutes.
-
 ---
-
 ## Tech stack (current)
 - **Build tool:** Vite
 - **UI:** React 19 (with JSX transform via `@vitejs/plugin-react`)
 - **Language:** TypeScript
 - **Routing:** `react-router-dom` v7
 - **Styling:** Tailwind CSS v4 (via `@tailwindcss/vite`)
+- **HTTP client:** `axios` — a configured instance lives at `src/lib/api/axios.config.ts`
+- **Server state:** `@tanstack/react-query` v5 — `QueryClientProvider` wraps the app in `main.tsx`
+- **Auth:** `@react-oauth/google` — Google One-Tap / OAuth credential flow. `GoogleOAuthProvider` wraps the app in `main.tsx`, fed by `VITE_GOOGLE_CLIENT_ID`.
 - **Linting:** ESLint (flat config) + `typescript-eslint` + React Hooks / React Refresh rules
-
-### Planned (not implemented yet)
-- **Auth:** Supabase Auth (Google OAuth) — UI shell exists on `/auth`, but no Supabase dependencies wired yet.
-  - Note: there are currently **no Supabase dependencies** in `package.json` and no `supabase` usage in `src/`.
-
+### Auth flow (implemented)
+1. User lands on `/auth` and clicks the Google sign-in button (rendered by `@react-oauth/google`'s `<GoogleLogin />`).
+2. On success, `@react-oauth/google` returns a Google credential JWT.
+3. The credential is passed to `authenticateWithGoogle(credential)` (`src/lib/api/auth.api.ts`), which POSTs it to the backend at `POST /auth/google`.
+4. The backend verifies the Google credential, creates its own session/JWT, and responds.
+5. On success the user is navigated to `/dashboard`; on failure an error toast is shown.
+### Environment variables
+All env vars are prefixed with `VITE_` so Vite exposes them at build time.
+| Variable | Purpose |
+|---|---|
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID passed to `GoogleOAuthProvider` |
+| `VITE_BACKEND_URL` | Base URL for all axios API calls |
+> **Guard:** If `VITE_GOOGLE_CLIENT_ID` is missing at startup, `main.tsx` logs an error and **does not render the app at all**.
 ---
-
 ## Repo layout & conventions
-
 ### Pages
 - **Location:** `src/pages/`
 - **Rule:** Pages should be **composition-only**.
   - They import the relevant components and lay out the page.
   - Keep business logic and reusable UI out of pages when possible.
-
 ### Components
 - **Root:** `src/components/`
-- **Two buckets:**
+- **Four buckets:**
   - `src/components/shared/`
     - Reusable components used across multiple pages/features.
-    - Current: `Sidebar.tsx` (layout wrapper for all authenticated app routes).
+    - Current: `Sidebar.tsx` (layout wrapper for all authenticated app routes), `Toast.tsx` (global toast notification renderer).
   - `src/components/standalone/<PageName>/`
     - Page-specific components that are not meant to be reused elsewhere.
-    - `<PageName>` should match the page file name (e.g. `Hero` page → `standalone/Hero/`).
-
+    - `<PageName>` should match the page file name (e.g. `Hero` page -> `standalone/Hero/`).
+  - `src/components/context/`
+    - React context definitions (plain `.ts` files - no JSX).
+    - Current: `ToastContext.ts`
+  - `src/components/provider/`
+    - React context provider components (`.tsx`).
+    - Current: `ToastProvider.tsx`
 ### Naming conventions
 - **Components:** PascalCase file names, `.tsx` (e.g. `HeroSection.tsx`).
-- **Folders:**
-  - Page-specific folder matches the page name (e.g. `Hero/`, `Dashboard/`).
-  - Keep related sections grouped together.
-- **Imports:** Current code uses explicit TS extensions in imports (e.g. `"./Hero.tsx"`). Prefer keeping this consistent unless you intentionally change the convention.
-
-### "Lib" utilities
+- **Folders:** Page-specific folder matches the page name (e.g. `Hero/`, `Dashboard/`).
+- **Imports:** Current code uses explicit TS extensions in imports (e.g. `"./Hero.tsx"`).
+### Lib utilities
 - **Location:** `src/lib/`
-- **Rule:** Non-React utilities/constants that are shared across the app.
-- Constants file is at `src/lib/constants/constants.ts` (note: nested in a `constants/` subfolder).
-
+- **Rule:** Non-React utilities/constants shared across the app.
+- Sub-folders:
+  - `src/lib/constants/` - app-wide constants and env var exports.
+  - `src/lib/api/` - axios instance + per-domain API functions.
+  - `src/lib/errors/` - `AppError` class + `handleError` utility.
+  - `src/lib/hooks/` - custom React hooks (auth, context accessors).
 ---
-
 ## Current app entry points
-
 ### HTML entry
-- `index.html`
-  - Loads fonts (Inter + Material Symbols).
-  - Mounts React at `<div id="root" />`.
-
-### React entry
-- `src/main.tsx`
-  - Creates the React root, wraps app in `<StrictMode>` and `<BrowserRouter>`.
-
-### App router
-- `src/App.tsx`
-  - Defines routes using `react-router-dom`.
-  - Authenticated app routes are nested under a `<Sidebar />` layout route (using `<Outlet />`).
-
+- `index.html` — Loads fonts (Inter + Material Symbols). Mounts React at `<div id="root" />`.
+### React entry (`src/main.tsx`)
+- Guards on `VITE_GOOGLE_CLIENT_ID`; if missing, logs an error and skips rendering entirely.
+- Provider nesting order:
+  `<StrictMode>` -> `<BrowserRouter>` -> `<QueryClientProvider>` -> `<GoogleOAuthProvider>` -> `<ToastProvider>` -> `<App/>` + `<Toast />`
+### App router (`src/App.tsx`)
+- Defines routes using `react-router-dom`.
+- Authenticated app routes are nested under a `<Sidebar />` layout route (using `<Outlet />`).
 ---
-
 ## Current routes
-
-### `/`
-- Page: `src/pages/Hero.tsx`
-- Purpose: Landing page (dark, glassy UI).
-- Layout: `<Navbar />` + `<main>` with landing sections.
-
-### `/auth`
-- Page: `src/pages/Auth.tsx`
-- Purpose: Authentication page — Google OAuth sign-in UI shell.
-- Layout: Standalone (no Sidebar). Includes a "Back to Home" link.
-- Note: Button is present but not wired to any auth provider yet.
-
-### `/dashboard` *(nested under `<Sidebar />`)*
-- Page: `src/pages/Dashboard.tsx`
-- Purpose: Main app dashboard showing balance summary, active groups, recent activity, and friends list.
-
-### `/friends` *(nested under `<Sidebar />`)*
-- Page: `src/pages/Friends.tsx`
-- Purpose: Friends management page — **stub, not yet implemented**.
-
-### `/groups` *(nested under `<Sidebar />`)*
-- Page: `src/pages/Groups.tsx`
-- Purpose: Groups management page — **stub, not yet implemented**.
-
-### `/settings` *(nested under `<Sidebar />`)*
-- Page: `src/pages/Settings.tsx`
-- Purpose: Settings page — **stub, not yet implemented**.
-
+| Path | Page | Notes |
+|---|---|---|
+| `/` | `src/pages/Hero.tsx` | Landing page |
+| `/auth` | `src/pages/Auth.tsx` | Google OAuth sign-in, no Sidebar |
+| `/dashboard` | `src/pages/Dashboard.tsx` | Nested under Sidebar |
+| `/friends` | `src/pages/Friends.tsx` | Nested under Sidebar — stub |
+| `/groups` | `src/pages/Groups.tsx` | Nested under Sidebar — stub |
+| `/settings` | `src/pages/Settings.tsx` | Nested under Sidebar — stub |
 ---
-
 ## Shared component: Sidebar (`src/components/shared/Sidebar.tsx`)
-
-Acts as a **layout route wrapper** for all authenticated app pages (`/dashboard`, `/friends`, `/groups`, `/settings`).
-
-- Renders a fixed left sidebar (`w-72`) with:
-  - FairShare brand logo + tagline.
-  - Navigation links driven by `DASHBOARD_SIDEBAR_TABS` constant (uses `useLocation` for active state).
-  - "Scan Receipt" CTA button at the bottom.
-  - Hardcoded user profile card (placeholder: "Alex Richards").
-  - Logout button (not yet wired).
-- Renders `<Outlet />` for the nested page content on the right.
-- Uses custom class `.glass-sidebar`.
-
+Layout route wrapper for all authenticated pages.
+- Fixed left sidebar (`w-72`) with brand logo, nav links (from `DASHBOARD_SIDEBAR_TABS`), "Scan Receipt" CTA, hardcoded user profile card, and logout button (not yet wired).
+- Uses `useLocation` for active nav state.
+- Renders `<Outlet />` for nested page content.
+- Custom class: `.glass-sidebar`
 ---
-
-## Landing page: Hero (`src/pages/Hero.tsx`)
-
-### Standalone components
-Location: `src/components/standalone/Hero/`
+## Shared component: Toast (`src/components/shared/Toast.tsx`)
+Global toast notification renderer. Rendered once at root in `main.tsx` alongside `<App />`.
+- Reads `toasts` and `dismiss` from `ToastContext` via `useToast()`.
+- Fixed stack at `bottom-4 right-4`.
+- Each toast: success (green `check_circle`) or error (red `error`) icon + message + manual dismiss button.
+- Auto-dismisses after 4 seconds (timer in `ToastProvider`).
+---
+## Toast system
+### Context (`src/components/context/ToastContext.ts`)
+Plain `.ts` (no JSX). Defines `ToastContext`:
+```ts
+interface ToastContextType {
+  toast: (message: string, success: boolean) => void;
+  toasts: Toast[];
+  dismiss: (id: number) => void;
+}
+```
+### Provider (`src/components/provider/ToastProvider.tsx`)
+- `toasts` state: array of `{ id, message, success }`.
+- `useRef` counter (`idRef`) generates unique IDs without extra re-renders.
+- `toast()` appends item and schedules auto-dismiss (4 s via `setTimeout`).
+- `dismiss()` filters the toast out immediately.
+### Hook — `useToast()` (`src/lib/hooks/context.hooks.ts`)
+- Safe `useContext(ToastContext)` accessor.
+- Throws `AppError` with `ERROR_SEVERITY.FATAL` if called outside provider.
+---
+## Error handling system
+### `AppError` (`src/lib/errors/app.error.ts`)
+Custom class extending `Error`. Adds `severity: ERROR_SEVERITY`.
+| Severity | Value | Meaning |
+|---|---|---|
+| `TOAST` | `"toast"` | Show dismissible toast (default) |
+| `LOG` | `"log"` | `console.error` only |
+| `FATAL` | `"fatal"` | Unexpected — should not occur at runtime |
+### `handleError` (`src/lib/errors/errorHandler.ts`)
+`handleError(error, toast)`:
+- `AppError` -> switch on severity -> `toast()` or `console.error()`.
+- Unknown errors -> generic toast + `console.error`.
+- Called in `useMutation`'s `onError` inside custom hooks.
+### Axios interceptor (`src/lib/api/axios.config.ts`)
+Converts every failed response into an `AppError`:
+```ts
+return Promise.reject(new AppError(serverMessage!));
+```
+All HTTP errors are `AppError` instances before reaching `handleError`.
+---
+## API layer (`src/lib/api/`)
+### Axios instance (`axios.config.ts`)
+```ts
+const api = axios.create({
+  baseURL: BACKEND_URL,   // VITE_BACKEND_URL
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" }
+});
+```
+Always import `api` from this file — never use `axios` directly.
+### Auth API (`auth.api.ts`)
+- `authenticateWithGoogle(credential: string)` — `POST /auth/google` with `{ credential }`.
+### API constants (`src/lib/constants/api.constants.ts`)
+- `GOOGLE_AUTH_URL = "/auth/google"`
+---
+## Custom hooks (`src/lib/hooks/`)
+### `auth.hooks.ts`
+- `useAuthenticateWithGoogle()` — TanStack `useMutation` wrapping `authenticateWithGoogle`.
+  - `onSuccess`: success toast + navigate to `/dashboard`.
+  - `onError`: `handleError(error, toast)`.
+  - Consumers destructure `mutate` (e.g. renamed `authenticateWithGoogle` in `AuthCard`).
+### `context.hooks.ts`
+- `useToast()` — safe `ToastContext` accessor (throws fatal `AppError` if outside provider).
+---
+## Landing page components (`src/components/standalone/Hero/`)
 - `Navbar.tsx` — Fixed top nav with brand + links + CTA.
-- `HeroSection.tsx` — Main headline + subtext + CTA button + "dashboard preview" mock.
-- `FeaturesSection.tsx` — "Smart Scan Technology" section with image + copy.
-- `HighlightsSection.tsx` — Grid of feature highlight cards + larger "Groups for every occasion" card.
-- `CallToActionSection.tsx` — Final CTA section ("Ready to settle up?").
-- `Footer.tsx` — Footer content and links. Uses `GITHUB_URL` from constants.
-
-### Page composition
-```tsx
-<>
-  <Navbar />
-  <main className="min-h-screen bg-background-dark bg-hero-glow">
-    <HeroSection />
-    <FeaturesSection />
-    <HighlightsSection />
-    <CallToActionSection />
-    <Footer />
-  </main>
-</>
-```
-
+- `HeroSection.tsx` — Main headline, CTA, dashboard preview mock.
+- `FeaturesSection.tsx` — "Smart Scan Technology" section.
+- `HighlightsSection.tsx` — Feature highlight card grid.
+- `CallToActionSection.tsx` — Final CTA section.
+- `Footer.tsx` — Footer links. Uses `GITHUB_URL` and `LINKEDIN_URL` from constants.
 ---
-
-## Dashboard page: Dashboard (`src/pages/Dashboard.tsx`)
-
-### Standalone components
-Location: `src/components/standalone/Dashboard/`
-- `TopNav.tsx`
-  - Sticky top bar with greeting, date, notification bell (with red dot indicator), and "New Expense" button.
-- `BalanceSection.tsx`
-  - Two-column summary cards: "Total Owed" (red) and "Total You Are Owed" (green), each with a % change indicator.
-- `GroupsSection.tsx`
-  - "Active Groups" heading + grid of `<GroupCard />` components + "Create New Group" placeholder card.
-  - Embeds `<RecentActivitySection />` below the groups grid.
-- `GroupCard.tsx`
-  - Individual group card showing group image, member avatars, group name, owed amount, and a progress bar.
-- `RecentActivitySection.tsx`
-  - "Recent Activity" list with expense items (icon, description, group name, amount, date).
-- `FriendsSidebar.tsx`
-  - Right-column friends list with avatars, online status indicators, owed/owing amounts, and action buttons (notify / pay).
-
-### Page composition
-```tsx
-<main className="flex-1 overflow-y-auto h-screen relative">
-  <TopNav />
-  <div className="px-8 pb-12 space-y-8">
-    <BalanceSection />
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-      <GroupsSection />   {/* xl:col-span-2 */}
-      <FriendsSidebar />
-    </div>
-  </div>
-</main>
-```
-
+## Dashboard page components (`src/components/standalone/Dashboard/`)
+- `TopNav.tsx` — Sticky top bar with greeting, date, notification bell, "New Expense" button.
+- `BalanceSection.tsx` — "Total Owed" (red) + "Total You Are Owed" (green) summary cards.
+- `GroupsSection.tsx` — Active groups grid + "Create New Group" card. Embeds `<RecentActivitySection />`.
+- `GroupCard.tsx` — Group card with image, member avatars, name, owed amount, progress bar.
+- `RecentActivitySection.tsx` — Recent activity list with expense items.
+- `FriendsSidebar.tsx` — Right-column friends list with avatars, balances, action buttons.
 ---
-
 ## Styling
-
 ### Tailwind config (`tailwind.config.ts`)
 - `darkMode: "class"`
-- `content`: `./index.html`, `./src/**/*.{js,ts,jsx,tsx}`
-- `theme.extend` includes:
-  - `colors`:
-    - `primary`: `#1337ec`
-    - `background-light`: `#f6f6f8`
-    - `background-dark`: `#050505`
-    - `surface-dark`: `#121212`
-    - `glass`: `rgba(255, 255, 255, 0.05)`
-    - `card-dark`: `#16161a`
-    - `border-dark`: `#2a2a30`
-  - `fontFamily`: `display`, `sans` (both Inter)
-  - `borderRadius`: default → full
-  - `backgroundImage`: `hero-glow` (radial gradient)
-
-### Global CSS utilities (`src/styles/global.css`)
-- Imports Tailwind (`@import "tailwindcss";`)
-- Uses `@config "../../tailwind.config.ts";`
-- Custom utility classes:
-  - `.glass-panel` — semi-transparent dark panel with backdrop blur.
-  - `.glass-card` — card with dark translucent background, backdrop blur, and subtle border/shadow.
-  - `.glass-sidebar` — sidebar variant with blur and right border.
-  - `.text-gradient` — white-to-zinc gradient text.
-  - `.text-gradient-primary` — blue gradient text (light blue → primary).
-  - `.animated-gradient` — radial gradient overlay used on the Auth page background.
-- Custom scrollbar styling (webkit).
-
+- Custom colors: `primary` (#1337ec), `background-dark` (#050505), `surface-dark` (#121212), `card-dark` (#16161a), `border-dark` (#2a2a30), `glass` (rgba white 5%).
+- Custom fonts: `display` + `sans` (both Inter).
+- Custom background: `hero-glow` radial gradient.
+### Global CSS (`src/styles/global.css`)
+Custom utility classes:
+- `.glass-panel` — semi-transparent dark panel with backdrop blur.
+- `.glass-card` — translucent card with blur, border, shadow.
+- `.glass-sidebar` — sidebar variant.
+- `.text-gradient` — white-to-zinc gradient text.
+- `.text-gradient-primary` — blue gradient text.
+- `.animated-gradient` — radial gradient overlay (Auth page background).
+- Custom webkit scrollbar styles.
 ---
-
 ## Constants (`src/lib/constants/constants.ts`)
-- `GITHUB_URL` — used by landing page footer.
-- `LINKEDIN_URL` — used by landing page footer.
-- `DASHBOARD_SIDEBAR_TABS` — array of `{ name, icon, link }` objects driving the Sidebar navigation. Tabs: Dashboard, Groups, Friends, Settings.
-
+- `GITHUB_URL`, `LINKEDIN_URL` — footer links.
+- `DASHBOARD_SIDEBAR_TABS` — `{ name, icon, link }[]` driving sidebar nav.
+- `GOOGLE_CLIENT_ID` — `import.meta.env.VITE_GOOGLE_CLIENT_ID`.
+- `BACKEND_URL` — `import.meta.env.VITE_BACKEND_URL`.
+- `ERROR_SEVERITY` — const object `{ TOAST, LOG, FATAL }` + TypeScript type.
 ---
-
-## Tooling scripts
-From `package.json`:
-- `dev`: run Vite dev server
-- `build`: TypeScript build (project references) + Vite build
-- `lint`: ESLint
-- `preview`: Vite preview
-
+## Tooling scripts (`package.json`)
+- `dev` — Vite dev server
+- `build` — `tsc -b && vite build`
+- `lint` — ESLint
+- `preview` — Vite preview
 ---
-
-## Known gaps / TODO (keep this short and current)
-- Supabase Google auth not wired yet (no deps/usages yet). Auth page UI shell exists at `/auth`.
-- Friends, Groups, and Settings pages are stubs (empty layout shells).
-- Sidebar user profile and Logout button are hardcoded/non-functional placeholders.
-- All data in Dashboard components (balances, friends, groups, activity) is hardcoded static UI — no backend integration yet.
+## Known gaps / TODO
+- No cookie/session storage after login — auth state is lost on page refresh.
+- Sidebar profile and Logout button are hardcoded placeholders.
+- All Dashboard data is static hardcoded UI — no backend integration yet.
+- Friends, Groups, and Settings pages are empty stubs.
