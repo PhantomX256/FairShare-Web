@@ -6,18 +6,18 @@ import CallToActionSection from "../components/standalone/Hero/CallToActionSecti
 import Footer from "../components/standalone/Hero/Footer.tsx";
 
 function Hero() {
-    return (
-        <>
-            <Navbar />
-            <main className="min-h-screen bg-background-dark bg-hero-glow">
-                <HeroSection />
-                <FeaturesSection />
-                <HighlightsSection />
-                <CallToActionSection />
-                <Footer />
-            </main>
-        </>
-    )
+	return (
+		<>
+			<Navbar />
+			<main className="min-h-screen bg-background-dark bg-hero-glow">
+				<HeroSection />
+				<FeaturesSection />
+				<HighlightsSection />
+				<CallToActionSection />
+				<Footer />
+			</main>
+		</>
+	);
 }
 
 export default Hero;

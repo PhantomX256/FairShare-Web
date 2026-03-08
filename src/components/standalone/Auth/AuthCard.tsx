@@ -1,8 +1,8 @@
 import {GoogleLogin} from "@react-oauth/google";
-import {useAuthenticateWithGoogle} from "../../../lib/hooks/auth.hooks.ts";
+import {useAuth} from "../../../lib/hooks/context.hooks.ts";
 
 function AuthCard() {
-    const { mutate: authenticateWithGoogle } = useAuthenticateWithGoogle();
+    const { login } = useAuth();
 
     return (
         <div className="glass-card rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center">
@@ -21,7 +21,7 @@ function AuthCard() {
                 <GoogleLogin
                     onSuccess={(credentialResponse) => {
                         if (credentialResponse.credential) {
-                            authenticateWithGoogle(credentialResponse.credential);
+                            login(credentialResponse.credential);
                         }
                     }}
                     width="300"

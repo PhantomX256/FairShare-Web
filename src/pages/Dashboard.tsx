@@ -4,19 +4,18 @@ import GroupsSection from "../components/standalone/Dashboard/GroupsSection.tsx"
 import FriendsSidebar from "../components/standalone/Dashboard/FriendsSidebar.tsx";
 
 function Dashboard() {
-    return (
-        <main className="flex-1 overflow-y-auto h-screen relative">
-            <TopNav />
-            <div className="px-8 pb-12 space-y-8">
-                <BalanceSection />
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <GroupsSection/>
-                    <FriendsSidebar/>
-                </div>
-            </div>
-        </main>
-    );
+	return (
+		<main className="flex-1 overflow-y-auto h-screen relative">
+			<TopNav />
+			<div className="px-8 pb-12 space-y-8">
+				<BalanceSection />
+				<div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+					<GroupsSection />
+					<FriendsSidebar />
+				</div>
+			</div>
+		</main>
+	);
 }
-
 
 export default Dashboard;

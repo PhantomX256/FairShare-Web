@@ -1,8 +1,12 @@
+import { useAuth } from "../../../lib/hooks/context.hooks.ts";
+
 function TopNav() {
+	const { user } = useAuth();
+
     return (
         <div className="sticky top-0 z-30 flex items-center justify-between px-8 py-6 bg-background-dark/80 backdrop-blur-md">
             <div>
-                <h2 className="text-white text-2xl font-black tracking-tight">Good morning, Alex</h2>
+                <h2 className="text-white text-2xl font-black tracking-tight">Good morning, {user?.full_name.split(' ')[0]}</h2>
                 <p className="text-slate-500 text-sm font-medium">Friday, October 24th</p>
             </div>
             <div className="flex items-center gap-4">

@@ -1,6 +1,6 @@
 function FriendsSidebar() {
     return (
-        <section className="space-y-6">
+        <section className="space-y-6 text-white">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">Friends</h2>
                 <button className="text-primary text-sm font-bold hover:underline">Add</button>

@@ -52,7 +52,7 @@ function HighlightsSection() {
                     <div className="w-full md:w-1/3 h-32 md:h-full rounded-xl bg-white/5 overflow-hidden relative">
                         <div className="absolute inset-0 bg-cover bg-center opacity-60"
                              data-alt="Abstract gradient mesh representing group connectivity"
-                             style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDY9x2YUwb1Vz6InA9fCGbkIdOEyVskgAWwSZ-VXa2LnfBYHujw21NpJ3W1-cDAT3bK50vuOOaMytG8fSSNyULT8xECGUIDtfW_vgCtMqr0r3mWaX4lObplBMoosD1WbeQDwN3fy-_edtEtuKcGiII4hwqELit_BWyZOjBIXuUaSeraJOIS_aK0M8zTdSuxjcmWzjVrMhC3FuEyEj9TpILGEQ0dcA3UxgNBHXQzK0ptwdAwP-TR4rVI3dQPM4Gj2icg6lZUgny0idk');"}}
+                             style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDY9x2YUwb1Vz6InA9fCGbkIdOEyVskgAWwSZ-VXa2LnfBYHujw21NpJ3W1-cDAT3bK50vuOOaMytG8fSSNyULT8xECGUIDtfW_vgCtMqr0r3mWaX4lObplBMoosD1WbeQDwN3fy-_edtEtuKcGiII4hwqELit_BWyZOjBIXuUaSeraJOIS_aK0M8zTdSuxjcmWzjVrMhC3FuEyEj9TpILGEQ0dcA3UxgNBHXQzK0ptwdAwP-TR4rVI3dQPM4Gj2icg6lZUgny0idk')"}}
                         />
                     </div>
                 </div>

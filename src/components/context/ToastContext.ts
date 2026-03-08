@@ -1,15 +1,4 @@
-import {createContext} from "react";
-
-interface Toast {
-    id: number;
-    message: string;
-    success: boolean;
-}
-
-interface ToastContextType {
-    toast: (message: string, success: boolean) => void;
-    toasts: Toast[];
-    dismiss: (id: number) => void;
-}
+import { createContext } from "react";
+import type { ToastContextType } from "../../lib/types/types.ts";
 
 export const ToastContext = createContext<ToastContextType | null>(null);

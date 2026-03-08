@@ -1,29 +1,34 @@
-import {type ReactNode, useRef, useState} from "react";
-import {ToastContext} from "../context/ToastContext";
+import { type ReactNode, useRef, useState } from "react";
+import { ToastContext } from "../context/ToastContext";
+import type { Toast } from "../../lib/types/types.ts";
 
-interface Toast {
-    id: number;
-    message: string;
-    success: boolean;
-}
+export function ToastProvider({ children }: { children: ReactNode }) {
+	// Keeps track of how many toasts to render
+	const [toasts, setToasts] = useState<Toast[]>([]);
 
-export function ToastProvider({children}: { children: ReactNode }) {
-    const [toasts, setToasts] = useState<Toast[]>([]);
-    const idRef = useRef(0);
+	// Assign unique id's to each toast
+	const idRef = useRef(0);
 
-    function toast(message: string, success: boolean) {
-        const id = ++idRef.current;
-        setToasts((prev) => [...prev, {id, message, success}]);
-        setTimeout(() => dismiss(id), 4000);
-    }
+	// Add a toast
+	function toast(message: string, success: boolean) {
+		// Get ID
+		const id = ++idRef.current;
 
-    function dismiss(id: number) {
-        setToasts((prev) => prev.filter((t) => t.id !== id));
-    }
+		// Add to toasts
+		setToasts((prev) => [...prev, { id, message, success }]);
 
-    return (
-        <ToastContext.Provider value={{toast, toasts, dismiss}}>
-            {children}
-        </ToastContext.Provider>
-    );
+		// Dismiss the toast after 4 sec
+		setTimeout(() => dismiss(id), 4000);
+	}
+
+	// Remove the toast
+	function dismiss(id: number) {
+		setToasts((prev) => prev.filter((t) => t.id !== id));
+	}
+
+	return (
+		<ToastContext.Provider value={{ toast, toasts, dismiss }}>
+			{children}
+		</ToastContext.Provider>
+	);
 }
