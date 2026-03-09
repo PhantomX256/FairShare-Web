@@ -59,10 +59,8 @@ button {
 }
 
 .glass-card {
-	background: rgba(255, 255, 255, 0.03);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.08);
 	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 .animated-gradient {
@@ -79,12 +77,6 @@ button {
 	border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.glass-card {
-	background: rgba(22, 22, 26, 0.6);
-	backdrop-filter: blur(12px);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
 .loader {
 	border-radius: 50%;
 	position: relative;
@@ -96,8 +88,8 @@ button {
 	position: absolute;
 	inset: 0;
 	border-radius: 50%;
-	border: 5px solid #1337ec;
 	animation: prixClipFix 2s linear infinite;
+	border: 5px solid #1337ec;
 }
 
 @keyframes rotate {

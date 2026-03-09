@@ -1,7 +1,7 @@
-import TopNav from "../components/standalone/Dashboard/TopNav.tsx";
 import BalanceSection from "../components/standalone/Dashboard/BalanceSection.tsx";
 import GroupsSection from "../components/standalone/Dashboard/GroupsSection.tsx";
 import FriendsSidebar from "../components/standalone/Dashboard/FriendsSidebar.tsx";
+import TopNav from "../components/standalone/Dashboard/TopNav.tsx";
 
 function Dashboard() {
 	return (

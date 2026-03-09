@@ -1,6 +1,6 @@
 function GroupCard() {
     return (
-        <div className="glass-card rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
+        <div className="glass-card bg-white/3 hover:bg-white/5 border border-white/8 rounded-2xl p-5 hover:border-white/20 transition-all cursor-pointer group">
             <div className="flex justify-between mb-4">
                 <div
                     className="size-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 overflow-hidden">

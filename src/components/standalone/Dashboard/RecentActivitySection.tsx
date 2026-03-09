@@ -7,7 +7,7 @@ function RecentActivitySection() {
             </div>
             <div className="space-y-3">
                 <div
-                    className="glass-card rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer">
+                    className="glass-card bg-white/3 border border-white/8 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer">
                     <div className="size-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-100">
                         <span className="material-symbols-outlined">bolt</span>
                     </div>
@@ -19,21 +19,6 @@ function RecentActivitySection() {
                     <div className="text-right">
                         <p className="text-sm font-bold text-emerald-500">$85.20</p>
                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Yesterday</p>
-                    </div>
-                </div>
-                <div
-                    className="glass-card rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer">
-                    <div className="size-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-100">
-                        <span className="material-symbols-outlined">shopping_cart</span>
-                    </div>
-                    <div className="flex-1">
-                        <p className="text-sm font-bold">Grocery Run</p>
-                        <p className="text-xs text-slate-500">Mike added to <span
-                            className="font-semibold text-slate-300">Apartment 4B</span></p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-sm font-bold">$34.50</p>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Oct 22</p>
                     </div>
                 </div>
             </div>

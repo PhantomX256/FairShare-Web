@@ -7,8 +7,6 @@ function Sidebar() {
 	const location = useLocation();
 	const { logout, isLoggingOut, user } = useAuth();
 
-	console.log(user);
-
 	return (
 		<div className="bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex overflow-hidden">
 			<aside className="w-72 glass-sidebar h-screen flex flex-col p-6 lg:flex shrink-0">
@@ -53,11 +51,11 @@ function Sidebar() {
 							<img
 								className="size-10 rounded-full border border-white/10 object-cover"
 								alt="User profile avatar of Alex"
-								src={user?.avatar_url}
+								src={user!.avatar_url}
 							/>
 							<div className="overflow-hidden">
 								<p className="text-white text-sm font-bold truncate">
-									{user?.full_name}
+									{user!.full_name}
 								</p>
 							</div>
 						</div>

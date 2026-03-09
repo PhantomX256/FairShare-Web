@@ -8,6 +8,11 @@ import { useGetCurrentUserData } from "../../lib/hooks/user.hooks.ts";
 import Loader from "../shared/Loader.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 
+/**
+ *	I'm gonna be real with you here I tried to understand this shit
+ *	but, I'm coding this while drinking I don't fucking know how this
+ *	works. I'm pretty sure nobody is gonna care, so fuck it.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const queryClient = useQueryClient();
 	const { mutateAsync: authenticateWithGoogle } = useAuthenticateWithGoogle();
@@ -15,14 +20,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		useLogoutComplete();
 	const { data: userData, isFetching } = useGetCurrentUserData();
 
+	// Instead of using states we're using queryKeys in queryClient
+	// These are here to send to children components
 	const user = userData ?? null;
 	const isLoggedIn = !!userData;
 
+	// Login function that authenticates with Google and sets the query key
 	async function login(credential: string) {
 		const user = await authenticateWithGoogle(credential);
 		queryClient.setQueryData(["user"], user);
 	}
 
+	// Logout function that removes cookies and removes query key
 	async function logout() {
 		await logoutComplete();
 		queryClient.setQueryData(["user"], null);

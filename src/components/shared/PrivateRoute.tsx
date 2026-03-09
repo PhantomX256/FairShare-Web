@@ -6,6 +6,8 @@ function PrivateRoute() {
 	const navigate = useNavigate();
 	const { isLoggedIn } = useAuth();
 
+	// On mount, check if the user is logged in
+	// If not then send them to a public route
 	useEffect(() => {
 		if (!isLoggedIn) navigate("/");
 	})

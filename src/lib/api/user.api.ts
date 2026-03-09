@@ -4,5 +4,5 @@ import type {User} from "../types/types.ts";
 
 export async function getCurrentUserData(): Promise<User> {
     const {data} = await api.get(GET_CURRENT_USER_DATA_URL);
-    return data.user[0];
+    return data.user;
 }

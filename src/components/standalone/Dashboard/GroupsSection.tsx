@@ -1,12 +1,13 @@
 import GroupCard from "./GroupCard.tsx";
 import RecentActivitySection from "./RecentActivitySection.tsx";
+import { Link } from "react-router-dom";
 
 function GroupsSection() {
     return (
         <section className="xl:col-span-2 text-white space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">Active Groups</h2>
-                <button className="text-primary text-sm font-bold hover:underline">View All</button>
+                <Link to="/groups" className="text-primary text-sm font-bold hover:underline">View All</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <GroupCard/>
