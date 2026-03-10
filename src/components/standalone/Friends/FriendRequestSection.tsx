@@ -26,7 +26,7 @@ function FriendRequestSection() {
 			toast("Error retrieving incoming requests", false);
 		if (isSentError)
 			toast("Error retrieving outgoing requests", false);
-	}, [isReceivedError, isSentError]);
+	}, [isReceivedError, isSentError, toast]);
 
 	return (
 		<section className="space-y-4 text-white">
