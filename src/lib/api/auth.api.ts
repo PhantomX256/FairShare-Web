@@ -9,5 +9,4 @@ export async function authenticateWithGoogle(credential: string): Promise<User> 
 
 export async function logoutComplete() {
     await api.post(LOGOUT_URL, {  });
-    return;
 }

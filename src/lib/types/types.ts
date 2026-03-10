@@ -9,8 +9,8 @@ export interface User {
 export interface AuthContextType {
 	user: User | null;
 	isLoggedIn: boolean;
-	login: (credential: string) => void;
-	logout: () => void;
+	login: (credential: string) => Promise<void>;
+	logout: () => Promise<void>;
 	isLoggingOut: boolean;
 }
 
@@ -24,4 +24,24 @@ export interface ToastContextType {
 	toast: (message: string, success: boolean) => void;
 	toasts: Toast[];
 	dismiss: (id: number) => void;
+}
+
+export interface ReceivedFriendRequest {
+	receiver_id: number;
+	created_at: string;
+	sender: {
+		internal_id: number;
+		full_name: string;
+		avatar_url: string;
+	};
+}
+
+export interface SentFriendRequest {
+	sender_id: number;
+	created_at: string;
+	receiver: {
+		internal_id: number;
+		full_name: string;
+		avatar_url: string;
+	}
 }

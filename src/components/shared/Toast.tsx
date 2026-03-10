@@ -18,7 +18,7 @@ function Toast() {
 						</span>
 					</div>
 					<div className="flex-1 pt-1">
-						<p className="text-slate-500 dark:text-slate-400 text-s mt-1 leading-relaxed">
+						<p className="text-slate-500 dark:text-slate-400 text-sm mt-1 leading-relaxed">
 							{t.message}
 						</p>
 					</div>

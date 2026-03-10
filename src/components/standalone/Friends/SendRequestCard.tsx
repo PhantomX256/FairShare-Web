@@ -13,12 +13,14 @@ function SendRequestCard() {
 		useSendFriendRequest();
 
 	async function handleSend() {
+		// Validate input
 		const result = SendRequestSchema.safeParse(value.trim());
 		if (!result.success) {
 			setInputError("Invalid userId or email");
 			return;
 		}
 
+		// Check if the user is sending a request to themselves
 		if (result.data === user!.email || result.data === user!.id) {
 			setInputError("You cannot send a friend request to yourself");
 			return;
@@ -29,7 +31,7 @@ function SendRequestCard() {
 			await sendFriendRequest(result.data!);
 		} catch {
 			// This is here to prevent an uncaught in promise log in the console
-			// Fucking retarded I know but it works
+			// Fucking retarded I know, but it works
 		}
 	}
 
