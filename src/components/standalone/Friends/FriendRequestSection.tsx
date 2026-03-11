@@ -35,7 +35,7 @@ function FriendRequestSection() {
 				<div className="flex items-center bg-card-dark p-1 rounded-xl">
 					<button
 						onClick={() => setSelectedTab("Incoming")}
-						className={`px-4 py-1.5 text-xs font-bold rounded-lg ${selectedTab === "Incoming" ? "bg-slate-800" : "text-slate-500"} transition-all duration-300 shadow-sm`}
+						className={`px-4 py-1.5 text-xs font-bold rounded-lg ${selectedTab === "Incoming" ? "bg-slate-800" : "text-slate-500"} hover:bg-slate-800 transition-all duration-300 shadow-sm`}
 					>
 						Incoming{" "}
 						{!fetchingReceivedRequests &&
@@ -44,7 +44,7 @@ function FriendRequestSection() {
 					</button>
 					<button
 						onClick={() => setSelectedTab("Outgoing")}
-						className={`px-4 py-1.5 text-xs font-bold rounded-lg ${selectedTab === "Outgoing" ? "bg-slate-800" : "text-slate-500"} transition-all duration-300 shadow-sm`}
+						className={`px-4 py-1.5 text-xs font-bold rounded-lg ${selectedTab === "Outgoing" ? "bg-slate-800" : "text-slate-500"} hover:bg-slate-800 transition-all duration-300 shadow-sm`}
 					>
 						Outgoing
 					</button>
@@ -70,7 +70,7 @@ function FriendRequestSection() {
 					</div>
 				)
 			) : sentFriendRequests!.length === 0 ? (
-				<div className="p-5 text-center text-sm text-slate-500">
+				<div className="p-10 text-center text-sm text-slate-500">
 					No Outgoing Requests
 				</div>
 			) : (

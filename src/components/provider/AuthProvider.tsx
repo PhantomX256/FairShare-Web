@@ -23,12 +23,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const user = userData ?? null;
 	const isLoggedIn = !!userData;
 
-	// Login function that authenticates with Google and sets the query key
 	async function login(credential: string) {
 		await authenticateWithGoogle(credential);
 	}
 
-	// Logout function that removes cookies and removes query key
 	async function logout() {
 		await logoutComplete();
 	}

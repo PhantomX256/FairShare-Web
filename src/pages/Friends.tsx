@@ -2,6 +2,7 @@ import TopNav from "../components/standalone/Dashboard/TopNav.tsx";
 import ShareIDCard from "../components/standalone/Friends/ShareIDCard.tsx";
 import SendRequestCard from "../components/standalone/Friends/SendRequestCard.tsx";
 import FriendRequestSection from "../components/standalone/Friends/FriendRequestSection.tsx";
+import FriendsSection from "../components/standalone/Friends/FriendsSection.tsx";
 
 function Friends() {
 	return (
@@ -13,6 +14,7 @@ function Friends() {
 					<SendRequestCard />
 				</div>
 				<FriendRequestSection />
+				<FriendsSection />
 			</div>
 		</main>
 	);

@@ -1,4 +1,5 @@
 export interface User {
+	internal_id: number;
 	id: string;
 	full_name: string;
 	email: string;
@@ -29,19 +30,16 @@ export interface ToastContextType {
 export interface ReceivedFriendRequest {
 	receiver_id: number;
 	created_at: string;
-	sender: {
-		internal_id: number;
-		full_name: string;
-		avatar_url: string;
-	};
+	sender: User;
 }
 
 export interface SentFriendRequest {
 	sender_id: number;
 	created_at: string;
-	receiver: {
-		internal_id: number;
-		full_name: string;
-		avatar_url: string;
-	}
+	receiver: User;
+}
+
+export interface PopupContextType {
+	openUserProfilePopup: (userInternalId: number) => void;
+	closeUserProfilePopup: () => void;
 }

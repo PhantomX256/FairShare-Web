@@ -12,7 +12,7 @@ function ShareIdCard() {
 					Your Share ID
 				</p>
 				<div className="flex items-center gap-3">
-					<span className="text-2xl font-black tracking-tight text-white">
+					<span className="text-xl font-black tracking-tight text-white">
 						{user!.id}
 					</span>
 					<button

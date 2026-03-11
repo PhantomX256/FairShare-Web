@@ -10,7 +10,7 @@ function SendRequestCard() {
 	const [inputError, setInputError] = useState("");
 
 	const { mutateAsync: sendFriendRequest, isPending: isSending } =
-		useSendFriendRequest();
+		useSendFriendRequest(setInputError);
 
 	async function handleSend() {
 		// Validate input
