@@ -25,6 +25,22 @@ export function getMonthAndYear(stringDate: string) {
 	});
 }
 
+export function getCurrentDayMonthDate() {
+	const now = new Date();
+
+	const ordinal = (n: number) => {
+		const s = ["th", "st", "nd", "rd"];
+		const v = n % 100;
+		return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
+	};
+
+	const weekday = now.toLocaleDateString("en-US", { weekday: "long" });
+	const month = now.toLocaleDateString("en-US", { month: "long" });
+	const day = ordinal(now.getDate());
+
+	return `${weekday}, ${month} ${day}`;
+}
+
 export function minutes(x: number) {
 	return 1000 * 60 * x;
 }
