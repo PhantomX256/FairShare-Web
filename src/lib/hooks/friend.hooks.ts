@@ -73,7 +73,8 @@ export function useModifyFriendRequest(incomingFlag: boolean, sender?: User) {
 			accept: boolean;
 		}) => modifyFriendRequest(senderId, receiverId, accept),
 		onSuccess: (_, { senderId, receiverId, accept }) => {
-			// Always remove from received requests cache (incoming decline/accept)
+			// If it is an incoming request then remove from the request
+			// from received request cache
 			if (incomingFlag) {
 				queryClient.setQueryData<ReceivedFriendRequest[]>(
 					["receivedRequests"],
@@ -83,7 +84,7 @@ export function useModifyFriendRequest(incomingFlag: boolean, sender?: User) {
 						) ?? [],
 				);
 			} else {
-				// Remove from sent requests cache (outgoing cancel)
+				// Else remove it from sent request cache
 				queryClient.setQueryData<SentFriendRequest[]>(
 					["sentRequests"],
 					(old) =>
@@ -93,6 +94,8 @@ export function useModifyFriendRequest(incomingFlag: boolean, sender?: User) {
 				);
 			}
 
+			// If the request was accepted by the client then
+			// update the friends cache with the sender's data
 			if (accept && sender)
 				queryClient.setQueryData<User[]>(["friends"], (old) => [
 					...(old ?? []),
