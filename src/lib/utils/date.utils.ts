@@ -18,6 +18,13 @@ export function getRelativeTime(stringDate?: string) {
 	return "More than a year ago";
 }
 
+export function getMonthAndYear(stringDate: string) {
+	return new Date(stringDate).toLocaleDateString("en-US", {
+		month: "short",
+		year: "numeric",
+	});
+}
+
 export function minutes(x: number) {
 	return 1000 * 60 * x;
 }

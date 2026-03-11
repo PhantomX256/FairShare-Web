@@ -40,6 +40,7 @@ export interface SentFriendRequest {
 }
 
 export interface PopupContextType {
+	userProfilePopup: number;
 	openUserProfilePopup: (userInternalId: number) => void;
 	closeUserProfilePopup: () => void;
 }

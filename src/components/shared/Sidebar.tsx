@@ -1,11 +1,12 @@
 import { DASHBOARD_SIDEBAR_TABS } from "../../lib/constants/constants.ts";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../../lib/hooks/context.hooks.ts";
+import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
 import Loader from "./Loader.tsx";
 
 function Sidebar() {
 	const location = useLocation();
 	const { logout, isLoggingOut, user } = useAuth();
+	const { openUserProfilePopup } = usePopup();
 
 	return (
 		<div className="bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex overflow-hidden">
@@ -46,7 +47,7 @@ function Sidebar() {
 						</span>
 						Scan Receipt
 					</button>
-					<div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+					<div onClick={() => openUserProfilePopup(user!.internal_id)} className="cursor-pointer p-4 rounded-2xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-100">
 						<div className="flex items-center gap-3">
 							<img
 								className="size-10 rounded-full border border-white/10 object-cover"

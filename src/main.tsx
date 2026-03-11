@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "./components/provider/ToastProvider.tsx";
 import Toast from "./components/shared/Toast.tsx";
 import { AuthProvider } from "./components/provider/AuthProvider.tsx";
+import { PopupProvider } from "./components/provider/PopupProvider.tsx";
+import UserProfilePopup from "./components/shared/UserProfilePopup.tsx";
 
 // If in case important environment variables are missing,
 // Don't even try to render the app, just log an error to the console.
@@ -23,7 +25,10 @@ if (!GOOGLE_CLIENT_ID) {
 					<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 						<ToastProvider>
 							<AuthProvider>
-								<App />
+								<PopupProvider>
+									<App />
+									<UserProfilePopup />
+								</PopupProvider>
 							</AuthProvider>
 							<Toast />
 						</ToastProvider>

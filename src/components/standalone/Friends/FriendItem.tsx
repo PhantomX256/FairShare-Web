@@ -1,9 +1,12 @@
 import type { User } from "../../../lib/types/types.ts";
 import {getRelativeTime} from "../../../lib/utils/date.utils.ts";
+import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 
 function FriendItem({ friend, isFriendSidebar=false }: { friend: User, isFriendSidebar?: boolean }) {
+	const { openUserProfilePopup } = usePopup();
+
 	return (
-		<div className="flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
+		<div onClick={() => openUserProfilePopup(friend.internal_id) } className="flex cursor-pointer items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
 			<div className="flex items-center gap-4">
 				<img
 					className={`${isFriendSidebar ? "size-10" : "size-12"} rounded-full object-cover`}

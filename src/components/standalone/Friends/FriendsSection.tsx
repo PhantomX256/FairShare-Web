@@ -43,7 +43,7 @@ function FriendsSection() {
 					) : (
 						<div className="divide-y divide-slate-800">
 							{friends!.map((friend) => (
-								<FriendItem friend={friend} />
+								<FriendItem key={friend.internal_id} friend={friend} />
 							))}
 						</div>
 					)}

@@ -32,7 +32,7 @@ function FriendsSidebar() {
 					<p>No friends found</p>
 				) : (
 					friends!.map((friend) => (
-						<FriendItem isFriendSidebar={true} friend={friend} />
+						<FriendItem key={friend.internal_id} isFriendSidebar={true} friend={friend} />
 					))
 				)}
 			</div>
