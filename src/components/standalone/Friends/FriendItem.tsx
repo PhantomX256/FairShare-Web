@@ -6,7 +6,7 @@ function FriendItem({ friend, isFriendSidebar=false }: { friend: User, isFriendS
 	const { openUserProfilePopup } = usePopup();
 
 	return (
-		<div onClick={() => openUserProfilePopup(friend.internal_id) } className="flex cursor-pointer items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
+		<div onClick={() => openUserProfilePopup(friend.internal_id) } className="flex cursor-pointer items-center justify-between p-4 hover:bg-white/5 transition-colors">
 			<div className="flex items-center gap-4">
 				<img
 					className={`${isFriendSidebar ? "size-10" : "size-12"} rounded-full object-cover`}

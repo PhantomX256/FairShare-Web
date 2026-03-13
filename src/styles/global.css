@@ -122,3 +122,8 @@ button {
 		clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
 	}
 }
+
+.abstract-pattern-1 {
+	background-image: radial-gradient(circle at 20% 20%, rgba(19, 55, 236, 0.15) 0%, transparent 40%),
+	radial-gradient(circle at 80% 80%, rgba(19, 55, 236, 0.1) 0%, transparent 40%);
+}

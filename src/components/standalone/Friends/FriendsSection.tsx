@@ -41,7 +41,7 @@ function FriendsSection() {
 							No Friends Found
 						</p>
 					) : (
-						<div className="divide-y divide-slate-800">
+						<div className="divide-y divide-white/8">
 							{friends!.map((friend) => (
 								<FriendItem key={friend.internal_id} friend={friend} />
 							))}

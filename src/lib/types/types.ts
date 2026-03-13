@@ -43,4 +43,17 @@ export interface PopupContextType {
 	userProfilePopup: number;
 	openUserProfilePopup: (userInternalId: number) => void;
 	closeUserProfilePopup: () => void;
+	createGroupPopup: boolean;
+	openCreateGroupPopup: () => void;
+	closeCreateGroupPopup: () => void;
+}
+
+export interface Group {
+	id: string;
+	internal_id: number;
+	name: string;
+	icon: string;
+	color: string;
+	created_by: number;
+	created_at: string;
 }

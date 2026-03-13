@@ -10,6 +10,7 @@ import Toast from "./components/shared/Toast.tsx";
 import { AuthProvider } from "./components/provider/AuthProvider.tsx";
 import { PopupProvider } from "./components/provider/PopupProvider.tsx";
 import UserProfilePopup from "./components/shared/UserProfilePopup.tsx";
+import CreateGroupPopup from "./components/shared/CreateGroupPopup.tsx";
 
 // If in case important environment variables are missing,
 // Don't even try to render the app, just log an error to the console.
@@ -28,6 +29,7 @@ if (!GOOGLE_CLIENT_ID) {
 								<PopupProvider>
 									<App />
 									<UserProfilePopup />
+									<CreateGroupPopup />
 								</PopupProvider>
 							</AuthProvider>
 							<Toast />

@@ -10,4 +10,6 @@ export const GET_RECEIVED_REQUEST_URL = "/app/friend/request/received";
 
 export const GET_SENT_REQUEST_URL = "/app/friend/request/sent";
 
-export const GET_FRIENDS_URL = "/app/friend"
+export const GET_FRIENDS_URL = "/app/friend";
+
+export const GET_GROUPS_URL = "/app/group";
