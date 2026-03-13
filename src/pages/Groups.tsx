@@ -19,9 +19,9 @@ function Groups() {
 
 	return (
 		<main className="min-h-screen w-full text-white">
-			<header className="text-white h-16 border-b border-white/8 flex items-center justify-between px-8 sticky top-0  backdrop-blur-md z-10">
+			<header className="text-white h-16 border-b border-white/8 flex items-center justify-between px-8 py-4 sticky top-0  backdrop-blur-md z-10">
 				<div className="flex items-center gap-2">
-					<h2 className="text-lg font-bold tracking-tight">
+					<h2 className="text-xl font-bold tracking-tight">
 						Your Groups
 					</h2>
 				</div>

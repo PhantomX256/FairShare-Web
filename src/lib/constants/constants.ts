@@ -38,3 +38,22 @@ export const ERROR_SEVERITY = {
 
 export type ERROR_SEVERITY =
 	(typeof ERROR_SEVERITY)[keyof typeof ERROR_SEVERITY];
+
+export const GROUP_ICONS = [
+	"home",
+	"flight",
+	"restaurant",
+	"shopping_cart",
+	"payments",
+	"movie",
+	"fitness_center",
+	"directions_car",
+];
+
+export const GROUP_COLORS = [
+	"#1337ec",
+	"#ff2056",
+	"#00bc7d",
+	"#fe9a00",
+	"#ad46ff",
+];

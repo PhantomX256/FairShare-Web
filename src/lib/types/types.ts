@@ -57,3 +57,11 @@ export interface Group {
 	created_by: number;
 	created_at: string;
 }
+
+export interface CreateGroupForm {
+	name: string;
+	icon: string;
+	color: string;
+	users: User[];
+	guests: string[]
+}

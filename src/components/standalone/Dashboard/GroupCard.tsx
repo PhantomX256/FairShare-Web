@@ -1,10 +1,12 @@
-function GroupCard() {
+import type { Group } from "../../../lib/types/types.ts";
+
+function GroupCard({ group }: { group: Group }) {
 	return (
 		<div className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
 			<div className="flex justify-between mb-4">
 				<div className="size-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
 					<span className="material-symbols-outlined text-2xl">
-						flight
+						{group.icon}
 					</span>
 				</div>
 				<div className="flex -space-x-3">
@@ -23,17 +25,17 @@ function GroupCard() {
 					</div>
 				</div>
 			</div>
-			<h4 className="font-bold text-lg mb-1">Trip to Japan</h4>
-			<div className="flex items-center gap-2 mb-4">
-				<span className="size-2 rounded-full bg-emerald-500"></span>
-				<p className="text-sm text-slate-400">
-					You are owed{" "}
-					<span className="text-slate-100 font-bold">$450.00</span>
-				</p>
-			</div>
-			<div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-				<div className="bg-primary w-1/3 h-full rounded-full"></div>
-			</div>
+			<h4 className="font-bold text-lg mb-1">{group.name}</h4>
+			{/*<div className="flex items-center gap-2 mb-4">*/}
+			{/*	<span className="size-2 rounded-full bg-emerald-500"></span>*/}
+			{/*	<p className="text-sm text-slate-400">*/}
+			{/*		You are owed{" "}*/}
+			{/*		<span className="text-slate-100 font-bold">$450.00</span>*/}
+			{/*	</p>*/}
+			{/*</div>*/}
+			{/*<div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">*/}
+			{/*	<div className="bg-primary w-1/3 h-full rounded-full"></div>*/}
+			{/*</div>*/}
 		</div>
 	);
 }
