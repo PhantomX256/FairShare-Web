@@ -36,7 +36,7 @@ function Token({
 			<span
 				className={`text-xs font-bold ${isCurrentUser ? "text-primary" : "text-slate-400"}`}
 			>
-				{user ? user.full_name : guestName!}
+				{user ? user.full_name : `${guestName!} (G)`}
 			</span>
 			<button
 				onClick={() =>

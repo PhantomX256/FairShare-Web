@@ -5,9 +5,8 @@ import ColorPicker from "../standalone/CreateGroupPopup/ColorPicker.tsx";
 import FriendPicker from "../standalone/CreateGroupPopup/FriendPicker.tsx";
 import { useGetAllFriends } from "../../lib/hooks/friend.hooks.ts";
 import Loader from "./Loader.tsx";
-import { GuestName } from "../../lib/validators/createGroup.validator.ts";
 import Token from "../standalone/CreateGroupPopup/Token.tsx";
-import type { CreateGroupForm, User } from "../../lib/types/types.ts";
+import { useCreateGroupForm } from "../../lib/hooks/group.hooks.ts";
 
 /**
  * Fair warning this entire thing could either be the most genius thing I've ever
@@ -18,19 +17,23 @@ function CreateGroupPopup() {
 	const { toast } = useToast();
 	const { user } = useAuth();
 	const [friendSearch, setFriendSearch] = useState("");
-	const [createGroupForm, setCreateGroupForm] = useState<CreateGroupForm>({
-		name: "",
-		icon: "home",
-		color: "#1337ec",
-		users: [user!],
-		guests: [],
-	});
 	const [guestName, setGuestName] = useState("");
 	const {
 		data: friends,
 		isFetching: fetchingFriends,
 		isError: friendError,
 	} = useGetAllFriends();
+	const {
+		form,
+		changeName,
+		setIcon,
+		setColor,
+		isFriendSelected,
+		selectFriend,
+		unSelectFriend,
+		addGuest,
+		removeGuest,
+	} = useCreateGroupForm();
 
 	const filteredFriends = useMemo(() => {
 		const term = friendSearch.trim().toLowerCase();
@@ -42,62 +45,6 @@ function CreateGroupPopup() {
 			friend.full_name.toLowerCase().includes(term),
 		);
 	}, [friends, friendSearch]);
-
-	function changeName(name: string) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			name: name,
-		}));
-	}
-
-	function setIcon(icon: string) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			icon,
-		}));
-	}
-
-	function setColor(color: string) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			color,
-		}));
-	}
-
-	function selectFriend(friend: User) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			users: [...prev.users, friend],
-		}));
-	}
-
-	function unSelectFriend(friend: User) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			users: prev.users.filter(
-				(user) => user.internal_id !== friend.internal_id,
-			),
-		}));
-	}
-
-	function addGuest() {
-		const result = GuestName.safeParse(guestName.trim());
-		if (!result.success) {
-			toast("Invalid guest name", false);
-		} else {
-			setCreateGroupForm((prev) => ({
-				...prev,
-				guests: [...prev.guests, result.data!],
-			}));
-		}
-	}
-
-	function removeGuest(guestIndex: number) {
-		setCreateGroupForm((prev) => ({
-			...prev,
-			guests: prev.guests.filter((_, index) => index !== guestIndex),
-		}));
-	}
 
 	useEffect(() => {
 		if (friendError) toast("Error fetching friends", false);
@@ -128,7 +75,7 @@ function CreateGroupPopup() {
 								Group Name
 							</label>
 							<input
-								value={createGroupForm.name}
+								value={form.name}
 								onChange={(e) => changeName(e.target.value)}
 								className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600"
 								placeholder="e.g. Weekend Getaway"
@@ -137,11 +84,11 @@ function CreateGroupPopup() {
 						</div>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 							<IconSelect
-								selectedIcon={createGroupForm.icon}
+								selectedIcon={form.icon}
 								setIcon={setIcon}
 							/>
 							<ColorPicker
-								selectedColor={createGroupForm.color}
+								selectedColor={form.color}
 								setColor={setColor}
 							/>
 						</div>
@@ -152,7 +99,7 @@ function CreateGroupPopup() {
 								Select Friends
 							</label>
 							<span className="text-[10px] font-medium text-slate-600">
-								{createGroupForm.users.length} SELECTED
+								{form.users.length} SELECTED
 							</span>
 						</div>
 						<div className="relative">
@@ -181,9 +128,7 @@ function CreateGroupPopup() {
 									<FriendPicker
 										key={friend.internal_id}
 										friend={friend}
-										isSelected={createGroupForm.users.includes(
-											friend,
-										)}
+										isSelected={isFriendSelected(friend)}
 										selectFriend={selectFriend}
 										unSelectFriend={unSelectFriend}
 									/>
@@ -206,7 +151,7 @@ function CreateGroupPopup() {
 									type="text"
 								/>
 								<button
-									onClick={addGuest}
+									onClick={() => addGuest(guestName)}
 									className="bg-white/10 px-5 py-3 rounded-2xl text-sm font-bold border border-white/5 text-white hover:bg-white/20 transition-all"
 								>
 									Add Guest
@@ -214,16 +159,18 @@ function CreateGroupPopup() {
 							</div>
 						</div>
 						<div className="flex flex-wrap gap-2 pt-2">
-							{createGroupForm.users.map((member) => (
+							{form.users.map((member) => (
 								<Token
+									key={member.internal_id}
 									currentUserId={user!.internal_id}
 									user={member}
 									unSelectFriend={unSelectFriend}
 									removeGuest={removeGuest}
 								/>
 							))}
-							{createGroupForm.guests.map((guest, index) => (
+							{form.guests.map((guest, index) => (
 								<Token
+									key={index}
 									guestName={guest}
 									guestIndex={index}
 									unSelectFriend={unSelectFriend}
