@@ -3,12 +3,23 @@ import type { Group } from "../../../lib/types/types.ts";
 function GroupCard({ group }: { group: Group }) {
 	return (
 		<div className="glass-card bg-white/3 group flex flex-col rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all border border-white/8 h-full">
-			<div className="h-full relative abstract-pattern-1 flex items-center justify-center bg-white/3">
-				<span className="material-symbols-outlined text-[100px] text-primary/40 group-hover:scale-110 transition-transform duration-500">
+			<div
+				style={{
+					backgroundImage: `radial-gradient(circle at 20% 20%, ${group.color}50 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${group.color}50 0%, transparent 40%)`,
+				}}
+				className="h-full relative flex items-center justify-center bg-white/3"
+			>
+				<span
+					style={{ color: group.color }}
+					className="material-symbols-outlined text-[100px]  group-hover:scale-110 transition-transform duration-500"
+				>
 					{group.icon}
 				</span>
 				<div className="absolute bottom-4 left-4 flex items-center gap-2">
-					<span className="bg-primary px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">
+					<span
+						style={{ backgroundColor: group.color }}
+						className=" px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider"
+					>
 						Home
 					</span>
 				</div>

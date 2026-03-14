@@ -4,7 +4,13 @@ function GroupCard({ group }: { group: Group }) {
 	return (
 		<div className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
 			<div className="flex justify-between mb-4">
-				<div className="size-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+				<div
+					style={{
+						backgroundColor: `${group.color}30`,
+						color: group.color,
+					}}
+					className="size-12 rounded-2xl  flex items-center justify-center"
+				>
 					<span className="material-symbols-outlined text-2xl">
 						{group.icon}
 					</span>
