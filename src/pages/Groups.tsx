@@ -89,7 +89,7 @@ function Groups() {
 							<Loader size={40} />
 						</div>
 					) : (
-						groups!.map((group) => <GroupCard group={group} /> )
+						groups!.map((group) => <GroupCard key={group.internal_id} group={group} /> )
 					)}
 				</div>
 			</div>

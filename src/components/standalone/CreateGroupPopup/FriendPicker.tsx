@@ -12,7 +12,7 @@ function FriendPicker({
 	unSelectFriend: (friend: User) => void;
 }) {
 	return (
-		<button
+		<div
 			onClick={() =>
 				isSelected
 					? unSelectFriend(friend)
@@ -44,7 +44,7 @@ function FriendPicker({
 			) : (
 				<div className="size-6 rounded-full border-2 border-white/20" />
 			)}
-		</button>
+		</div>
 	);
 }
 

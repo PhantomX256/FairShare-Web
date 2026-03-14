@@ -1,10 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllGroups } from "../api/group.api.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createGroup, getAllGroups } from "../api/group.api.ts";
 import { minutes } from "../utils/date.utils.ts";
 import { useState } from "react";
 import type { CreateGroupForm, User } from "../types/types.ts";
-import { useAuth, useToast } from "./context.hooks.ts";
-import { GuestName } from "../validators/createGroup.validator.ts";
+import { useAuth, usePopup, useToast } from "./context.hooks.ts";
+import {
+	CreateGroupSchema,
+	GuestName,
+} from "../validators/createGroup.validator.ts";
 
 export function useGetAllGroups() {
 	return useQuery({
@@ -25,6 +28,7 @@ export function useCreateGroupForm() {
 		users: [user!],
 		guests: [],
 	});
+	const { mutateAsync: createGroup, isPending: creatingGroup } = useCreateGroup();
 
 	function changeName(name: string) {
 		setForm((prev) => ({
@@ -88,6 +92,20 @@ export function useCreateGroupForm() {
 		}));
 	}
 
+	async function submitForm() {
+		const result = CreateGroupSchema.safeParse(form);
+		if (!result.success) {
+			result.error.issues.map((issue) => toast(issue.message, false));
+			return;
+		}
+		if (result.data.users.length === 1 && result.data.guests.length === 0) {
+			toast("You cannot make a group by yourself", false);
+			return;
+		}
+
+		await createGroup(result.data);
+	}
+
 	return {
 		form,
 		changeName,
@@ -97,6 +115,26 @@ export function useCreateGroupForm() {
 		selectFriend,
 		unSelectFriend,
 		addGuest,
-		removeGuest
-	}
+		removeGuest,
+		submitForm,
+		creatingGroup,
+	};
+}
+
+export function useCreateGroup() {
+	const { toast } = useToast();
+	const { closeCreateGroupPopup } = usePopup();
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: createGroup,
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["groups"] });
+			toast("Created group successfully", true);
+			closeCreateGroupPopup();
+		},
+		onError: () => {
+			toast("Error creating group", false);
+		},
+	});
 }

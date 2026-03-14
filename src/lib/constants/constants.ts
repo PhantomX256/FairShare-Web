@@ -48,7 +48,7 @@ export const GROUP_ICONS = [
 	"movie",
 	"fitness_center",
 	"directions_car",
-];
+] as const;
 
 export const GROUP_COLORS = [
 	"#1337ec",
