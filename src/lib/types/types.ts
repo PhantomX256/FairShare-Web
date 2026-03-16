@@ -21,12 +21,6 @@ export interface ToastProps {
 	id: string | number;
 }
 
-export interface Toast {
-	id: number;
-	message: string;
-	success: boolean;
-}
-
 export interface ReceivedFriendRequest {
 	receiver_id: number;
 	created_at: string;
@@ -56,6 +50,8 @@ export interface Group {
 	color: string;
 	created_by: number;
 	created_at: string;
+	member_count?: number;
+	avatars?: string[];
 }
 
 export interface CreateGroupForm {
@@ -64,4 +60,16 @@ export interface CreateGroupForm {
 	color: string;
 	users: User[];
 	guests: string[]
+}
+
+export interface Member {
+	id: string;
+	internal_id: number;
+	full_name: string;
+	email: string;
+	avatar_url: string;
+}
+
+export interface GroupData {
+	members: Member[];
 }

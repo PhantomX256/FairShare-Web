@@ -1,9 +1,12 @@
 import type { Group } from "../../../lib/types/types.ts";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function GroupCard({ group }: { group: Group }) {
 	return (
-		<Link to={`/groups/${group.id}`} className="glass-card bg-white/3 group flex flex-col rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all border border-white/8 h-full">
+		<Link
+			to={`/groups/${group.id}`}
+			className="glass-card bg-white/3 group flex flex-col rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all border border-white/8 h-full"
+		>
 			<div
 				style={{
 					backgroundImage: `radial-gradient(circle at 20% 20%, ${group.color}50 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${group.color}50 0%, transparent 40%)`,
@@ -30,20 +33,19 @@ function GroupCard({ group }: { group: Group }) {
 					<div>
 						<h3 className="font-bold text-lg">{group.name}</h3>
 						<p className="text-xs text-slate-500">
-							4 members • Shared Bills
+							{group.member_count!} members • Shared Bills
 						</p>
 					</div>
 					<div className="flex -space-x-2">
-						<img
-							className="size-6 rounded-full border-2 border-background-dark"
-							src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNu83ickNkeFda6nqPu2u5tSazze8leriaxPbpiMdv-eXvZ2uR5M-wa3dqMRbessLSMWjoJTfwarfeV0jiNBnkqEPVpjFmrZFiYh5_Sfn3UWiX3JHJfJ2sopG42GkBa9YX6jOu_AKyMwYrCrsVfcg5C6QuytNJ06qcw6xwCwK_7ztFWw6W1UvkQS5VIaBLCqCwTSttytwttTSXJi6LOfgwhGL8jUyWBmqWlTPOLft10glkU0K7MfsMAen3dXq-Kvz3WomLEt432Vg"
-						/>
-						<img
-							className="size-6 rounded-full border-2 border-background-dark"
-							src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPpMXCXm4BNM8tk1zcHOHTCq-PE8WC3RzBEvLMP1wSefXr8oo7EdPIqpk6LhAFHNoP1dla-K47iEcKKyHsehKNRZgYphM49GJoH6mxhZxdTxlI2CVEfuEB6mxvPIl6ERpAiknE1rBR8-qfDFpxycKNak7-KhpvylScnwYSixN0-TUNr-wrXEVDWjQ7_FykReWNHwu4SsfV8b0jspkoNNpijg6b-EnKKGAMzonFM_yPwPwIgubr-_w9zB7clGAxZVXo-akt7FqvJ4E"
-						/>
+						{group.avatars!.map((avatar) => (
+							<img
+								alt="Group member avatar"
+								className="size-6 rounded-full border-2 border-background-dark"
+								src={avatar}
+							/>
+						))}
 						<div className="size-6 rounded-full bg-slate-800 border-2 border-background-dark flex items-center justify-center text-[10px] text-white">
-							+2
+							+{group.member_count! - group.avatars!.length}
 						</div>
 					</div>
 				</div>

@@ -3,7 +3,10 @@ import {Link} from "react-router-dom";
 
 function GroupCard({ group }: { group: Group }) {
 	return (
-		<Link to={`/groups/${group.id}`} className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
+		<Link
+			to={`/groups/${group.id}`}
+			className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group"
+		>
 			<div className="flex justify-between mb-4">
 				<div
 					style={{
@@ -16,19 +19,16 @@ function GroupCard({ group }: { group: Group }) {
 						{group.icon}
 					</span>
 				</div>
-				<div className="flex -space-x-3">
-					<img
-						className="size-8 rounded-full border-2 border-background-dark object-cover"
-						alt="Friend avatar 3"
-						src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIBO1vjqxJ8YmiFpHjg9W8DlQt6IHudWyieI1cIcS_heacsYRTdIjKGDJCluflxzuVT1uaU5lSt-uuFMyyS5_VYvEceAmxQgD7PKu__EZF4uLO1EoVbQhsSHS-LT0jHufPwefLLpVKOq4TrCWpKvaoQ4Rl3gL-VLWmGVCSRg6iBgDv0oYDykTrHJZvThtikWdF6h9v4A-cUntufXYoViXRFp1RgvonaEw7JgdcBCfvmTqJ2vK-dI79XbDlBM5sErOHdM1dIzvmw2s"
-					/>
-					<img
-						className="size-8 rounded-full border-2 border-background-dark object-cover"
-						alt="Friend avatar 4"
-						src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCYXYqaK6hKuy1GCvatNMiQpSczUg3RWa3iF6jsHMJx_DVSaiqOCwAMiZAjfwVZBVkelRq_kpPlO7b79wu4ny4aKmOXtk1NNY8j6MFYolYKUo7hB6XPZEXwvQ4UvTGs-KngY_HkxABYTDxrCb3F_Plb9rl5nAWLZJBciXXt8ENdh6ZnH_-EpOgyLfm7uExX58AZxq2GyCWTjxEY5q2rvR4m-Bndr8UXqnAEy2sd8w_3nnPyD5hzQeFqL1uBPASnm0UVMap_mYYtUM"
-					/>
-					<div className="size-8 rounded-full border-2 border-background-dark bg-slate-800 flex items-center justify-center text-[10px] font-bold">
-						+3
+				<div className="flex -space-x-2">
+					{group.avatars!.map((avatar) => (
+						<img
+							alt="Group member avatar"
+							className="size-6 rounded-full border-2 border-background-dark"
+							src={avatar}
+						/>
+					))}
+					<div className="size-6 rounded-full bg-slate-800 border-2 border-background-dark flex items-center justify-center text-[10px] text-white">
+						+{group.member_count! - group.avatars!.length}
 					</div>
 				</div>
 			</div>

@@ -1,6 +1,6 @@
 import api from "./axios.config.ts";
 import { GROUPS_URL } from "../constants/api.constants.ts";
-import type { CreateGroupForm, Group } from "../types/types.ts";
+import type { CreateGroupForm, Group, GroupData } from "../types/types.ts";
 
 export async function getAllGroups(): Promise<Group[]> {
 	const { data } = await api.get(GROUPS_URL);
@@ -14,4 +14,9 @@ export async function createGroup(createGroupForm: CreateGroupForm) {
 	};
 
 	await api.post(GROUPS_URL, { createGroupForm: payload });
+}
+
+export async function getGroupData(groupId: string): Promise<GroupData> {
+	const { data } = await api.get(`${GROUPS_URL}/${groupId}`);
+	return data;
 }

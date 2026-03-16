@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createGroup, getAllGroups } from "../api/group.api.ts";
+import { createGroup, getAllGroups, getGroupData } from "../api/group.api.ts";
 import { minutes } from "../utils/date.utils.ts";
 import { useState } from "react";
 import type { CreateGroupForm, User } from "../types/types.ts";
@@ -136,4 +136,13 @@ export function useCreateGroup() {
 			toast({message: "Error creating group", success: false});
 		},
 	});
+}
+
+export function useGetGroupData(groupId: string) {
+	return useQuery({
+		queryKey: ["group", groupId],
+		queryFn: () => getGroupData(groupId),
+		staleTime: minutes(5),
+		refetchOnWindowFocus: false,
+	})
 }
