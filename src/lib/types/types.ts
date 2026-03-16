@@ -15,16 +15,16 @@ export interface AuthContextType {
 	isLoggingOut: boolean;
 }
 
+export interface ToastProps {
+	message: string;
+	success: boolean;
+	id: string | number;
+}
+
 export interface Toast {
 	id: number;
 	message: string;
 	success: boolean;
-}
-
-export interface ToastContextType {
-	toast: (message: string, success: boolean) => void;
-	toasts: Toast[];
-	dismiss: (id: number) => void;
 }
 
 export interface ReceivedFriendRequest {

@@ -6,23 +6,22 @@ import {
 	sendFriendRequest,
 } from "../api/friend.api.ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "./context.hooks.ts";
 import type {
 	ReceivedFriendRequest,
 	SentFriendRequest,
 	User,
 } from "../types/types.ts";
 import { minutes } from "../utils/date.utils.ts";
+import { toast } from "../../components/shared/CustomToast.tsx";
 
 export function useSendFriendRequest(setError: (message: string) => void) {
-	const { toast } = useToast();
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: sendFriendRequest,
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["sentRequests"] });
-			toast("Friend request sent", true);
+			toast({message: "Friend request sent", success: true});
 		},
 		onError: (error) => {
 			setError(error.message);
@@ -59,7 +58,6 @@ export function useGetAllFriends() {
 }
 
 export function useModifyFriendRequest(incomingFlag: boolean, sender?: User) {
-	const { toast } = useToast();
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -101,10 +99,10 @@ export function useModifyFriendRequest(incomingFlag: boolean, sender?: User) {
 					...(old ?? []),
 					{ ...sender },
 				]);
-			toast("Successfully modified the request", true);
+			toast({message: "Successfully modified the request", success: true});
 		},
 		onError: () => {
-			toast("Error while modifying request", false);
+			toast({message: "Error while modifying request", success: false});
 		},
 	});
 }

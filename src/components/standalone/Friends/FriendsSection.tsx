@@ -1,8 +1,8 @@
 import FriendItem from "./FriendItem.tsx";
 import { useGetAllFriends } from "../../../lib/hooks/friend.hooks.ts";
 import { useEffect } from "react";
-import { useToast } from "../../../lib/hooks/context.hooks.ts";
 import Loader from "../../shared/Loader.tsx";
+import { toast } from "../../shared/CustomToast.tsx";
 
 function FriendsSection() {
 	const {
@@ -11,13 +11,10 @@ function FriendsSection() {
 		isError: friendError,
 	} = useGetAllFriends();
 
-	const { toast } = useToast();
-
 	useEffect(() => {
-		if (friendError) {
-			toast("Error fetching friends", false);
-		}
-	}, [friendError, toast]);
+		if (friendError)
+			toast({ message: "Error fetching friends", success: false });
+	}, [friendError]);
 
 	return (
 		<section className="space-y-4 text-white">
@@ -43,7 +40,10 @@ function FriendsSection() {
 					) : (
 						<div className="divide-y divide-white/8">
 							{friends!.map((friend) => (
-								<FriendItem key={friend.internal_id} friend={friend} />
+								<FriendItem
+									key={friend.internal_id}
+									friend={friend}
+								/>
 							))}
 						</div>
 					)}

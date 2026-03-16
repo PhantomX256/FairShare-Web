@@ -3,7 +3,8 @@ import { createGroup, getAllGroups } from "../api/group.api.ts";
 import { minutes } from "../utils/date.utils.ts";
 import { useState } from "react";
 import type { CreateGroupForm, User } from "../types/types.ts";
-import { useAuth, usePopup, useToast } from "./context.hooks.ts";
+import { useAuth, usePopup } from "./context.hooks.ts";
+import { toast } from "../../components/shared/CustomToast.tsx";
 import {
 	CreateGroupSchema,
 	GuestName,
@@ -20,7 +21,6 @@ export function useGetAllGroups() {
 
 export function useCreateGroupForm() {
 	const { user } = useAuth();
-	const { toast } = useToast();
 	const [form, setForm] = useState<CreateGroupForm>({
 		name: "",
 		icon: "home",
@@ -76,7 +76,7 @@ export function useCreateGroupForm() {
 	function addGuest(guestName: string) {
 		const result = GuestName.safeParse(guestName.trim());
 		if (!result.success) {
-			toast("Invalid guest name", false);
+			toast({message: "Invalid guest name", success: false});
 		} else {
 			setForm((prev) => ({
 				...prev,
@@ -95,11 +95,11 @@ export function useCreateGroupForm() {
 	async function submitForm() {
 		const result = CreateGroupSchema.safeParse(form);
 		if (!result.success) {
-			result.error.issues.map((issue) => toast(issue.message, false));
+			result.error.issues.map((issue) => toast({message: issue.message, success: false}));
 			return;
 		}
 		if (result.data.users.length === 1 && result.data.guests.length === 0) {
-			toast("You cannot make a group by yourself", false);
+			toast({message: "You cannot make a group by yourself", success: false});
 			return;
 		}
 
@@ -122,7 +122,6 @@ export function useCreateGroupForm() {
 }
 
 export function useCreateGroup() {
-	const { toast } = useToast();
 	const { closeCreateGroupPopup } = usePopup();
 	const queryClient = useQueryClient();
 
@@ -130,11 +129,11 @@ export function useCreateGroup() {
 		mutationFn: createGroup,
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ["groups"] });
-			toast("Created group successfully", true);
+			toast({message: "Created group successfully", success: true});
 			closeCreateGroupPopup();
 		},
 		onError: () => {
-			toast("Error creating group", false);
+			toast({message: "Error creating group", success: false});
 		},
 	});
 }

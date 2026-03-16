@@ -9,6 +9,7 @@ import Groups from "./pages/Groups.tsx";
 import Settings from "./pages/Settings.tsx";
 import PublicRoute from "./components/shared/PublicRoute.tsx";
 import PrivateRoute from "./components/shared/PrivateRoute.tsx";
+import GroupDetails from "./pages/GroupDetails.tsx";
 
 function App() {
 	return (
@@ -22,6 +23,7 @@ function App() {
 					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/friends" element={<Friends />} />
 					<Route path="/groups" element={<Groups />} />
+					<Route path="/groups/:groupId" element={<GroupDetails />} />
 					<Route path="/settings" element={<Settings />} />
 				</Route>
 			</Route>

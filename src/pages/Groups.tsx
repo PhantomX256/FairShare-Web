@@ -1,8 +1,9 @@
 import GroupCard from "../components/standalone/Groups/GroupCard.tsx";
 import { useGetAllGroups } from "../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
-import { usePopup, useToast } from "../lib/hooks/context.hooks.ts";
+import { usePopup } from "../lib/hooks/context.hooks.ts";
 import Loader from "../components/shared/Loader.tsx";
+import { toast } from "../components/shared/CustomToast.tsx";
 
 function Groups() {
 	const {
@@ -10,12 +11,12 @@ function Groups() {
 		isFetching: fetchingGroups,
 		isError: groupError,
 	} = useGetAllGroups();
-	const { toast } = useToast();
 	const { openCreateGroupPopup } = usePopup();
 
 	useEffect(() => {
-		if (groupError) toast("Error fetching groups", false);
-	}, [groupError, toast]);
+		if (groupError)
+			toast({ message: "Error fetching groups", success: false });
+	}, [groupError]);
 
 	return (
 		<main className="min-h-screen w-full text-white">
@@ -69,7 +70,10 @@ function Groups() {
 					</div>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-					<div onClick={openCreateGroupPopup} className="group flex flex-col justify-center items-center gap-4 p-6 border-2 border-dashed border-white/8 rounded-2xl hover:bg-white/8  transition-all cursor-pointer min-h-70">
+					<div
+						onClick={openCreateGroupPopup}
+						className="group flex flex-col justify-center items-center gap-4 p-6 border-2 border-dashed border-white/8 rounded-2xl hover:bg-white/8  transition-all cursor-pointer min-h-70"
+					>
 						<div className="size-14 rounded-full bg-white/5 text-slate-500 flex items-center justify-center group-hover:text-primary transition-all">
 							<span className="material-symbols-outlined text-3xl">
 								add
@@ -89,7 +93,9 @@ function Groups() {
 							<Loader size={40} />
 						</div>
 					) : (
-						groups!.map((group) => <GroupCard key={group.internal_id} group={group} /> )
+						groups!.map((group) => (
+							<GroupCard key={group.internal_id} group={group} />
+						))
 					)}
 				</div>
 			</div>

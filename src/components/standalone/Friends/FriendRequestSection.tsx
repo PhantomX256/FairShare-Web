@@ -1,8 +1,11 @@
 import RequestItem from "./RequestItem.tsx";
-import { useGetAllReceivedFriendRequests, useGetAllSentFriendRequests } from "../../../lib/hooks/friend.hooks.ts";
+import {
+	useGetAllReceivedFriendRequests,
+	useGetAllSentFriendRequests,
+} from "../../../lib/hooks/friend.hooks.ts";
 import { useEffect, useState } from "react";
-import { useToast } from "../../../lib/hooks/context.hooks.ts";
 import Loader from "../../shared/Loader.tsx";
+import { toast } from "../../shared/CustomToast.tsx";
 
 function FriendRequestSection() {
 	const [selectedTab, setSelectedTab] = useState("Incoming");
@@ -16,17 +19,21 @@ function FriendRequestSection() {
 	const {
 		data: sentFriendRequests,
 		isFetching: fetchingSentRequests,
-		isError: isSentError
+		isError: isSentError,
 	} = useGetAllSentFriendRequests(selectedTab === "Outgoing");
-
-	const { toast } = useToast();
 
 	useEffect(() => {
 		if (isReceivedError)
-			toast("Error retrieving incoming requests", false);
+			toast({
+				message: "Error retrieving incoming requests",
+				success: false,
+			});
 		if (isSentError)
-			toast("Error retrieving outgoing requests", false);
-	}, [isReceivedError, isSentError, toast]);
+			toast({
+				message: "Error retrieving outgoing requests",
+				success: false,
+			});
+	}, [isReceivedError, isSentError]);
 
 	return (
 		<section className="space-y-4 text-white">

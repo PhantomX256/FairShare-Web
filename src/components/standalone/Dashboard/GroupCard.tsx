@@ -1,8 +1,9 @@
 import type { Group } from "../../../lib/types/types.ts";
+import {Link} from "react-router-dom";
 
 function GroupCard({ group }: { group: Group }) {
 	return (
-		<div className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
+		<Link to={`/groups/${group.id}`} className="glass-card border bg-white/3 border-white/8 rounded-2xl p-5 hover:bg-white/5 transition-all cursor-pointer group">
 			<div className="flex justify-between mb-4">
 				<div
 					style={{
@@ -42,7 +43,7 @@ function GroupCard({ group }: { group: Group }) {
 			{/*<div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">*/}
 			{/*	<div className="bg-primary w-1/3 h-full rounded-full"></div>*/}
 			{/*</div>*/}
-		</div>
+		</Link>
 	);
 }
 

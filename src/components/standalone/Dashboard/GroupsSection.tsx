@@ -1,10 +1,11 @@
 import GroupCard from "./GroupCard.tsx";
 import RecentActivitySection from "./RecentActivitySection.tsx";
 import { Link } from "react-router-dom";
-import { usePopup, useToast } from "../../../lib/hooks/context.hooks.ts";
+import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { useGetAllGroups } from "../../../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
 import Loader from "../../shared/Loader.tsx";
+import { toast } from "../../shared/CustomToast.tsx";
 
 function GroupsSection() {
 	const {
@@ -13,11 +14,11 @@ function GroupsSection() {
 		isError: groupError,
 	} = useGetAllGroups();
 	const { openCreateGroupPopup } = usePopup();
-	const { toast } = useToast();
 
 	useEffect(() => {
-		if (groupError) toast("Error fetching groups", false);
-	}, [groupError, toast]);
+		if (groupError)
+			toast({ message: "Error fetching groups", success: false });
+	}, [groupError]);
 
 	return (
 		<section className="xl:col-span-2 text-white space-y-6">
@@ -36,7 +37,9 @@ function GroupsSection() {
 						<Loader size={30} />
 					</div>
 				) : (
-					groups!.map((group) => <GroupCard key={group.id} group={group} />)
+					groups!.map((group) => (
+						<GroupCard key={group.id} group={group} />
+					))
 				)}
 				<div
 					onClick={openCreateGroupPopup}

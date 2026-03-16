@@ -1,8 +1,9 @@
 import type { Group } from "../../../lib/types/types.ts";
+import {Link} from "react-router-dom";
 
 function GroupCard({ group }: { group: Group }) {
 	return (
-		<div className="glass-card bg-white/3 group flex flex-col rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all border border-white/8 h-full">
+		<Link to={`/groups/${group.id}`} className="glass-card bg-white/3 group flex flex-col rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all border border-white/8 h-full">
 			<div
 				style={{
 					backgroundImage: `radial-gradient(circle at 20% 20%, ${group.color}50 0%, transparent 40%), radial-gradient(circle at 80% 80%, ${group.color}50 0%, transparent 40%)`,
@@ -62,7 +63,7 @@ function GroupCard({ group }: { group: Group }) {
 					</div>
 				</div>
 			</div>
-		</div>
+		</Link>
 	);
 }
 

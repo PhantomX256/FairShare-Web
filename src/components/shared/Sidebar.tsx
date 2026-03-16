@@ -29,7 +29,7 @@ function Sidebar() {
 				<nav className="space-y-2 flex-1">
 					{DASHBOARD_SIDEBAR_TABS.map((tab) => (
 						<Link
-							className={`flex items-center gap-3 px-4 py-3 rounded-xl ${location.pathname === tab.link ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-100 hover:bg-white/5"}  font-semibold transition-all`}
+							className={`flex items-center gap-3 px-4 py-3 rounded-xl ${location.pathname.includes(tab.link) ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-100 hover:bg-white/5"}  font-semibold transition-all`}
 							to={tab.link}
 							key={tab.name}
 						>

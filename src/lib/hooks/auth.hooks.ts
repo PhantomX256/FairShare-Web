@@ -1,10 +1,9 @@
 import { authenticateWithGoogle, logoutComplete } from "../api/auth.api.ts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "./context.hooks.ts";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../../components/shared/CustomToast.tsx";
 
 export function useAuthenticateWithGoogle() {
-	const { toast } = useToast();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 
@@ -12,17 +11,16 @@ export function useAuthenticateWithGoogle() {
 		mutationFn: authenticateWithGoogle,
 		onSuccess: (data) => {
 			queryClient.setQueryData(["user"], data);
-			toast("Authentication successful", true);
+			toast({ message: "Authentication successful", success: true });
 			navigate("/dashboard");
 		},
 		onError: () => {
-			toast("Error during authentication", false);
+			toast({ message: "Error during authentication", success: false });
 		},
 	});
 }
 
 export function useLogoutComplete() {
-	const { toast } = useToast();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 
@@ -35,10 +33,10 @@ export function useLogoutComplete() {
 			// of user data in AuthProvider
 			queryClient.setQueryData(["user"], null);
 			navigate("/");
-			toast("Logged out successfully", true);
+			toast({ message: "Logged out successfully", success: true });
 		},
 		onError: () => {
-			toast("Error during logout", false);
+			toast({ message: "Error during logout", success: false });
 		},
 	});
 }

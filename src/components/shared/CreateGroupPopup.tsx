@@ -1,4 +1,4 @@
-import { useAuth, usePopup, useToast } from "../../lib/hooks/context.hooks.ts";
+import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
 import IconSelect from "../standalone/CreateGroupPopup/IconSelect.tsx";
 import { useEffect, useMemo, useState } from "react";
 import ColorPicker from "../standalone/CreateGroupPopup/ColorPicker.tsx";
@@ -7,6 +7,7 @@ import { useGetAllFriends } from "../../lib/hooks/friend.hooks.ts";
 import Loader from "./Loader.tsx";
 import Token from "../standalone/CreateGroupPopup/Token.tsx";
 import { useCreateGroupForm } from "../../lib/hooks/group.hooks.ts";
+import { toast } from "./CustomToast.tsx";
 
 /**
  * Fair warning this entire thing could either be the most genius thing I've ever
@@ -14,7 +15,6 @@ import { useCreateGroupForm } from "../../lib/hooks/group.hooks.ts";
  */
 function CreateGroupPopup() {
 	const { createGroupPopup, closeCreateGroupPopup } = usePopup();
-	const { toast } = useToast();
 	const { user } = useAuth();
 	const [friendSearch, setFriendSearch] = useState("");
 	const [guestName, setGuestName] = useState("");
@@ -34,7 +34,7 @@ function CreateGroupPopup() {
 		addGuest,
 		removeGuest,
 		submitForm,
-		creatingGroup
+		creatingGroup,
 	} = useCreateGroupForm();
 
 	const filteredFriends = useMemo(() => {
@@ -49,8 +49,9 @@ function CreateGroupPopup() {
 	}, [friends, friendSearch]);
 
 	useEffect(() => {
-		if (friendError) toast("Error fetching friends", false);
-	}, [friendError, toast]);
+		if (friendError)
+			toast({ message: "Error fetching friends", success: false });
+	}, [friendError]);
 
 	if (!createGroupPopup) return null;
 
