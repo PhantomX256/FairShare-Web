@@ -13,7 +13,7 @@ function GroupDetails() {
 	const {
 		data: groupData,
 		isFetching: fetchingGroupData,
-		isError: fetchError,
+		isError: fetchError
 	} = useGetGroupData(groupId!);
 
 	useEffect(() => {
@@ -23,13 +23,15 @@ function GroupDetails() {
 
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
-			<header className="h-16 border-b border-brand-border flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
+			<header
+				className="h-16 border-b border-brand-border flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
 				<h2 className="text-white font-headline font-semibold text-lg">
 					Group Details
 				</h2>
 				<div className="flex items-center gap-4">
 					<div className="relative">
-						<span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
+						<span
+							className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
 							search
 						</span>
 						<input
@@ -52,11 +54,11 @@ function GroupDetails() {
 			</header>
 			<div className="flex-1 overflow-y-auto p-8">
 				{fetchingGroupData ? (
-					<Loader size={30} />
+					<div className="w-full h-full flex items-center justify-center"><Loader size={50} /></div>
 				) : (
 					<div className="max-w-6xl mx-auto space-y-8">
 						<section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-							<GroupBalanceCard />
+							<GroupBalanceCard group={groupData!.group} />
 							<SettlementsCard />
 						</section>
 						<div className="grid grid-cols-1 xl:grid-cols-12 gap-8">

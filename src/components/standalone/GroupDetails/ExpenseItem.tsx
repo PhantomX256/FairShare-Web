@@ -1,7 +1,7 @@
 function ExpenseItem() {
 	return (
 		<div
-			className="glass-card  border border-white/8 bg-white/5 p-4 rounded-2xl flex items-center justify-between hover:bg-white/8 transition-colors group">
+			className="glass-card  border border-white/8 bg-white/5 p-4 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all group">
 			<div className="flex items-center gap-4">
 				<div
 					className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">

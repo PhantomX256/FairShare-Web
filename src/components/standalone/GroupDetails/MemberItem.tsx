@@ -6,17 +6,21 @@ function MemberItem({ member }: { member: Member }) {
 
 	return (
 		<>
-			<div className="p-4 flex items-center justify-between">
+			<div className="p-4 flex items-center justify-between hover:bg-white/8 transition-all">
 				<div className="flex items-center gap-3">
-					<div className="w-10 h-10 rounded-full border-2 border-emerald-500/50 p-0.5">
-						<img
-							alt={`Profile photo of ${member.full_name}`}
-							className="w-full h-full rounded-full object-cover"
-							src={member.avatar_url}
-						/>
+					<div className="w-10 h-10 rounded-full border-2 flex items-center justify-center border-emerald-500/50 p-0.5 bg-primary/20">
+						{member.avatar_url ? (
+							<img
+								alt={`Profile photo of ${member.name}`}
+								className="w-full h-full rounded-full object-cover"
+								src={member.avatar_url}
+							/>
+						) : (
+							member.name[0].toUpperCase()
+						)}
 					</div>
 					<div>
-						<p className="text-sm font-semibold">{`${member.full_name} ${member.internal_id === user!.internal_id && "(You)"}`}</p>
+						<p className="text-sm font-semibold">{`${member.name} ${member.internal_id === user!.internal_id ? "(You)" : ""} ${!member.internal_id ? "(G)" : ""}`}</p>
 						<p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">
 							Is owed
 						</p>

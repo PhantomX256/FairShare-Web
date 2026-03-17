@@ -64,12 +64,13 @@ export interface CreateGroupForm {
 
 export interface Member {
 	id: string;
-	internal_id: number;
-	full_name: string;
+	internal_id?: number;
+	name: string;
 	email: string;
-	avatar_url: string;
+	avatar_url?: string;
 }
 
 export interface GroupData {
+	group: Group;
 	members: Member[];
 }
