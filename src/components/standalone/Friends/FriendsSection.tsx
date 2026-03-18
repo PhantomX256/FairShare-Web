@@ -1,7 +1,6 @@
 import FriendItem from "./FriendItem.tsx";
 import { useGetAllFriends } from "../../../lib/hooks/friend.hooks.ts";
 import { useEffect } from "react";
-import Loader from "../../shared/Loader.tsx";
 import { toast } from "../../shared/CustomToast.tsx";
 
 function FriendsSection() {
@@ -28,8 +27,12 @@ function FriendsSection() {
 				</button>
 			</div>
 			{fetchingFriends ? (
-				<div className="text-center mt-10">
-					<Loader size={30} />
+				<div className="flex p-4 items-center justify-between w-full h-20 bg-white/5 rounded-2xl border border-white/8">
+					<div className="flex flex-1 items-center gap-4">
+						<div className="size-12 bg-white/10 rounded-full animate-pulse" />
+						<div className="w-1/4 h-6 bg-white/10 rounded animate-pulse" />
+					</div>
+					<div className="w-20 h-10 bg-white/10 rounded animate-pulse" />
 				</div>
 			) : (
 				<div className="glass-card bg-white/3 border border-white/8 rounded-2xl overflow-hidden shadow-sm">

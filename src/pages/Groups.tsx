@@ -2,7 +2,6 @@ import GroupCard from "../components/standalone/Groups/GroupCard.tsx";
 import { useGetAllGroups } from "../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
 import { usePopup } from "../lib/hooks/context.hooks.ts";
-import Loader from "../components/shared/Loader.tsx";
 import { toast } from "../components/shared/CustomToast.tsx";
 
 function Groups() {
@@ -89,9 +88,7 @@ function Groups() {
 						</div>
 					</div>
 					{fetchingGroups ? (
-						<div className="h-full flex items-center justify-center">
-							<Loader size={40} />
-						</div>
+						<div className="h-full w-full flex items-center justify-center bg-white/10 rounded-2xl animate-pulse" />
 					) : (
 						groups!.map((group) => (
 							<GroupCard key={group.internal_id} group={group} />

@@ -1,6 +1,5 @@
 import { useGetAllFriends } from "../../../lib/hooks/friend.hooks.ts";
 import FriendItem from "../Friends/FriendItem.tsx";
-import Loader from "../../shared/Loader.tsx";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "../../shared/CustomToast.tsx";
@@ -30,9 +29,17 @@ function FriendsSidebar() {
 			</div>
 			<div className="glass-card bg-white/3 border border-white/8 rounded-2xl overflow-hidden divide-y divide-white/5">
 				{fetchingFriends ? (
-					<div className="w-full text-center p-5">
-						<Loader size={20} />
-					</div>
+					<>
+						{Array.from({ length: 2 }).map((_, index) => (
+							<div
+								key={index}
+								className="flex items-center gap-4 p-4"
+							>
+								<div className="w-10 h-10 rounded-full bg-white/10 animate-pulse"></div>
+								<div className="h-4 bg-white/10 rounded w-1/3 animate-pulse"></div>
+							</div>
+						))}
+					</>
 				) : friends!.length == 0 ? (
 					<p>No friends found</p>
 				) : (

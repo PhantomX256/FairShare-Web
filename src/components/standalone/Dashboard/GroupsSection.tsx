@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { useGetAllGroups } from "../../../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
-import Loader from "../../shared/Loader.tsx";
 import { toast } from "../../shared/CustomToast.tsx";
 
 function GroupsSection() {
@@ -33,8 +32,9 @@ function GroupsSection() {
 			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				{fetchingGroups ? (
-					<div className="flex items-center justify-center">
-						<Loader size={30} />
+					<div className="flex flex-col justify-center gap-4 p-5 bg-white/5 border border-white/8 rounded-2xl">
+						<div className="size-12 bg-white/10 animate-pulse rounded-2xl" />
+						<div className="w-30 h-6 bg-white/10 animate-pulse rounded" />
 					</div>
 				) : (
 					groups!.map((group) => (

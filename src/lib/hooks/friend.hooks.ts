@@ -5,7 +5,12 @@ import {
 	modifyFriendRequest,
 	sendFriendRequest,
 } from "../api/friend.api.ts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import type {
 	ReceivedFriendRequest,
 	SentFriendRequest,
@@ -34,7 +39,8 @@ export function useGetAllReceivedFriendRequests() {
 		queryKey: ["receivedRequests"],
 		queryFn: getAllReceivedFriendRequests,
 		refetchOnWindowFocus: false,
-		staleTime: minutes(1)
+		staleTime: minutes(1),
+		placeholderData: keepPreviousData,
 	});
 }
 
@@ -45,6 +51,7 @@ export function useGetAllSentFriendRequests(enabled: boolean) {
 		refetchOnWindowFocus: false,
 		enabled,
 		staleTime: Infinity,
+		placeholderData: keepPreviousData,
 	});
 }
 
@@ -54,6 +61,7 @@ export function useGetAllFriends() {
 		queryFn: getAllFriends,
 		refetchOnWindowFocus: false,
 		staleTime: minutes(5),
+		placeholderData: keepPreviousData,
 	});
 }
 

@@ -4,7 +4,6 @@ import {
 	useGetAllSentFriendRequests,
 } from "../../../lib/hooks/friend.hooks.ts";
 import { useEffect, useState } from "react";
-import Loader from "../../shared/Loader.tsx";
 import { toast } from "../../shared/CustomToast.tsx";
 
 function FriendRequestSection() {
@@ -58,9 +57,7 @@ function FriendRequestSection() {
 				</div>
 			</div>
 			{fetchingReceivedRequests || fetchingSentRequests ? (
-				<div className="w-full flex justify-center">
-					<Loader size={30} />
-				</div>
+				<div className="w-full h-25 flex border border-white/8 bg-white/10 animate-pulse rounded-2xl" />
 			) : selectedTab === "Incoming" ? (
 				receivedFriendRequests!.length === 0 ? (
 					<div className="p-10 text-center text-sm text-slate-500">
