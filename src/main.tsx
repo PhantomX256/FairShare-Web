@@ -7,8 +7,6 @@ import { GOOGLE_CLIENT_ID } from "./lib/constants/constants.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./components/provider/AuthProvider.tsx";
 import { PopupProvider } from "./components/provider/PopupProvider.tsx";
-import UserProfilePopup from "./components/shared/UserProfilePopup.tsx";
-import CreateGroupPopup from "./components/shared/CreateGroupPopup.tsx";
 import { Toaster } from "sonner";
 
 // If in case important environment variables are missing,
@@ -26,8 +24,6 @@ if (!GOOGLE_CLIENT_ID) {
 						<AuthProvider>
 							<PopupProvider>
 								<App />
-								<UserProfilePopup />
-								<CreateGroupPopup />
 							</PopupProvider>
 						</AuthProvider>
 						<Toaster />

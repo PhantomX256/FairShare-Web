@@ -1,4 +1,4 @@
-import type { User } from "../../../lib/types/types.ts";
+import type { User } from "../../lib/types/types.ts";
 
 function FriendPicker({
 	friend,

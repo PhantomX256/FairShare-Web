@@ -40,6 +40,9 @@ export interface PopupContextType {
 	createGroupPopup: boolean;
 	openCreateGroupPopup: () => void;
 	closeCreateGroupPopup: () => void;
+	editGroupPopup: string;
+	openEditGroupPopup: (groupInternalId: string) => void;
+	closeEditGroupPopup: () => void;
 }
 
 export interface Group {
@@ -59,18 +62,37 @@ export interface CreateGroupForm {
 	icon: string;
 	color: string;
 	users: User[];
-	guests: string[]
+	guests: string[];
 }
 
 export interface Member {
-	id: string;
+	member_id: number;
+	user_id?: string;
 	internal_id?: number;
 	name: string;
-	email: string;
+	email?: string;
 	avatar_url?: string;
+}
+
+export interface Guest {
+	member_id: number;
+	name: string;
+	isOriginalMember: boolean;
 }
 
 export interface GroupData {
 	group: Group;
 	members: Member[];
+}
+
+export interface EditGroupForm {
+	groupInternalId: number;
+	name: string;
+	icon: string;
+	color: string;
+	users: Member[];
+	guests: Guest[];
+	newUsers: User[];
+	newGuests: string[];
+	removeMembers: Member[];
 }

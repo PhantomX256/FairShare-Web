@@ -9,7 +9,7 @@ import { toast } from "../../shared/CustomToast.tsx";
 function GroupsSection() {
 	const {
 		data: groups,
-		isFetching: fetchingGroups,
+		isLoading: fetchingGroups,
 		isError: groupError,
 	} = useGetAllGroups();
 	const { openCreateGroupPopup } = usePopup();

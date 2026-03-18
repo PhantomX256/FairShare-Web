@@ -2,14 +2,16 @@ import { DASHBOARD_SIDEBAR_TABS } from "../../lib/constants/constants.ts";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
 import Loader from "./Loader.tsx";
+import UserProfilePopup from "./UserProfilePopup.tsx";
 
 function Sidebar() {
 	const location = useLocation();
 	const { logout, isLoggingOut, user } = useAuth();
-	const { openUserProfilePopup } = usePopup();
+	const { userProfilePopup, openUserProfilePopup } = usePopup();
 
 	return (
 		<div className="bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex overflow-hidden">
+			{userProfilePopup !== 0 && <UserProfilePopup />}
 			<aside className="w-72 glass-sidebar h-screen flex flex-col p-6 lg:flex shrink-0">
 				<div className="flex items-center gap-3 mb-10 px-2">
 					<div className="size-10 bg-primary rounded-xl flex items-center justify-center text-white premium-shadow">

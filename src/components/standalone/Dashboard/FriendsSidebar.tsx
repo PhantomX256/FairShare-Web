@@ -7,7 +7,7 @@ import { toast } from "../../shared/CustomToast.tsx";
 function FriendsSidebar() {
 	const {
 		data: friends,
-		isFetching: fetchingFriends,
+		isLoading: fetchingFriends,
 		isError: friendError,
 	} = useGetAllFriends();
 

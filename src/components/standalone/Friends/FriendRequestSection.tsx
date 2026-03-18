@@ -11,13 +11,13 @@ function FriendRequestSection() {
 
 	const {
 		data: receivedFriendRequests,
-		isFetching: fetchingReceivedRequests,
+		isLoading: fetchingReceivedRequests,
 		isError: isReceivedError,
 	} = useGetAllReceivedFriendRequests();
 
 	const {
 		data: sentFriendRequests,
-		isFetching: fetchingSentRequests,
+		isLoading: fetchingSentRequests,
 		isError: isSentError,
 	} = useGetAllSentFriendRequests(selectedTab === "Outgoing");
 

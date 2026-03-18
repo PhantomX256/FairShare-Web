@@ -1,4 +1,4 @@
-import { GROUP_COLORS } from "../../../lib/constants/constants.ts";
+import { GROUP_COLORS } from "../../lib/constants/constants.ts";
 
 function ColorPicker({
 	selectedColor,

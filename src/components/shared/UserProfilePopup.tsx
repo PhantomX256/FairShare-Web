@@ -8,8 +8,6 @@ function UserProfilePopup() {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
 
-	if (userProfilePopup === 0) return null;
-
 	const friends = queryClient.getQueryData<User[]>(["friends"]);
 	const profile: User | undefined =
 		user!.internal_id === userProfilePopup

@@ -6,12 +6,16 @@ import { useGetGroupData } from "../lib/hooks/group.hooks.ts";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
+import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
+import EditGroupPopup from "../components/shared/EditGroupPopup.tsx";
 
 function GroupDetails() {
 	const { groupId } = useParams();
+	const { user } = useAuth();
+	const { editGroupPopup, openEditGroupPopup } = usePopup();
 	const {
 		data: groupData,
-		isFetching: fetchingGroupData,
+		isLoading: fetchingGroupData,
 		isError: fetchError,
 	} = useGetGroupData(groupId!);
 
@@ -20,8 +24,11 @@ function GroupDetails() {
 			toast({ message: "Failed to fetch group details", success: false });
 	}, [fetchError]);
 
+	if (!groupId || !groupData) return null;
+
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
+			{editGroupPopup && <EditGroupPopup />}
 			<header className="h-16 border-b border-brand-border flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
 				<h2 className="text-white font-headline font-semibold text-lg">
 					Group Details
@@ -42,11 +49,17 @@ function GroupDetails() {
 							notifications
 						</span>
 					</button>
-					<button className="text-gray-400 hover:text-white transition-colors">
-						<span className="material-symbols-outlined">
-							more_vert
-						</span>
-					</button>
+					{!fetchingGroupData &&
+						groupData!.group.created_by === user!.internal_id && (
+							<button
+								className="text-gray-400 hover:text-white transition-colors"
+								onClick={() => openEditGroupPopup(groupId)}
+							>
+								<span className="material-symbols-outlined">
+									settings
+								</span>
+							</button>
+						)}
 				</div>
 			</header>
 			<div className="flex-1 overflow-y-auto p-8">

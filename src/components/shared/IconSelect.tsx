@@ -1,4 +1,4 @@
-import { GROUP_ICONS } from "../../../lib/constants/constants.ts";
+import { GROUP_ICONS } from "../../lib/constants/constants.ts";
 
 function IconSelect({
 	selectedIcon,

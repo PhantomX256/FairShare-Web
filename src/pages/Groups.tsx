@@ -3,14 +3,15 @@ import { useGetAllGroups } from "../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
 import { usePopup } from "../lib/hooks/context.hooks.ts";
 import { toast } from "../components/shared/CustomToast.tsx";
+import CreateGroupPopup from "../components/shared/CreateGroupPopup.tsx";
 
 function Groups() {
 	const {
 		data: groups,
-		isFetching: fetchingGroups,
+		isLoading: fetchingGroups,
 		isError: groupError,
 	} = useGetAllGroups();
-	const { openCreateGroupPopup } = usePopup();
+	const { createGroupPopup, openCreateGroupPopup } = usePopup();
 
 	useEffect(() => {
 		if (groupError)
@@ -19,6 +20,7 @@ function Groups() {
 
 	return (
 		<main className="min-h-screen w-full text-white">
+			{createGroupPopup && <CreateGroupPopup />}
 			<header className="text-white h-16 border-b border-white/8 flex items-center justify-between px-8 py-4 sticky top-0  backdrop-blur-md z-10">
 				<div className="flex items-center gap-2">
 					<h2 className="text-xl font-bold tracking-tight">

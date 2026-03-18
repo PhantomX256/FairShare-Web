@@ -2,10 +2,15 @@ import BalanceSection from "../components/standalone/Dashboard/BalanceSection.ts
 import GroupsSection from "../components/standalone/Dashboard/GroupsSection.tsx";
 import FriendsSidebar from "../components/standalone/Dashboard/FriendsSidebar.tsx";
 import TopNav from "../components/standalone/Dashboard/TopNav.tsx";
+import { usePopup } from "../lib/hooks/context.hooks.ts";
+import CreateGroupPopup from "../components/shared/CreateGroupPopup.tsx";
 
 function Dashboard() {
+	const { createGroupPopup } = usePopup();
+
 	return (
 		<main className="flex-1 overflow-y-auto h-screen relative">
+			{createGroupPopup && <CreateGroupPopup />}
 			<TopNav />
 			<div className="px-8 pb-12 space-y-8">
 				<BalanceSection />

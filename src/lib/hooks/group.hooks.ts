@@ -7,13 +7,21 @@ import {
 import { createGroup, getAllGroups, getGroupData } from "../api/group.api.ts";
 import { minutes } from "../utils/date.utils.ts";
 import { useState } from "react";
-import type { CreateGroupForm, User } from "../types/types.ts";
+import type {
+	CreateGroupForm,
+	EditGroupForm,
+	GroupData,
+	Guest,
+	Member,
+	User,
+} from "../types/types.ts";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
 import {
 	CreateGroupSchema,
 	GuestName,
 } from "../validators/createGroup.validator.ts";
+import { createStateForEditGroup } from "../utils/group.utils.ts";
 
 export function useGetAllGroups() {
 	return useQuery({
@@ -27,6 +35,7 @@ export function useGetAllGroups() {
 
 export function useCreateGroupForm() {
 	const { user } = useAuth();
+	// Default create group variables
 	const [form, setForm] = useState<CreateGroupForm>({
 		name: "",
 		icon: "home",
@@ -158,4 +167,128 @@ export function useGetGroupData(groupId: string) {
 		refetchOnWindowFocus: false,
 		placeholderData: keepPreviousData,
 	});
+}
+
+export function useEditGroupForm(groupData: GroupData) {
+	const [form, setForm] = useState<EditGroupForm>(
+		createStateForEditGroup(groupData),
+	);
+
+	function changeName(name: string) {
+		setForm((prev) => ({ ...prev, name }));
+	}
+
+	function setIcon(icon: string) {
+		setForm((prev) => ({ ...prev, icon }));
+	}
+
+	function setColor(color: string) {
+		setForm((prev) => ({ ...prev, color }));
+	}
+
+	function selectFriend(friend: User) {
+		setForm((prev) => {
+			// If in case the user was part of the original member list
+			// then just remove them from removeMembers and add them back
+			// to users
+			const isOriginalMember = prev.removeMembers.find(
+				(member) => member.internal_id === friend.internal_id,
+			);
+			if (isOriginalMember) {
+				return {
+					...prev,
+					users: [...prev.users, isOriginalMember],
+					removeMembers: prev.removeMembers.filter(
+						(member) => member.internal_id !== friend.internal_id,
+					),
+				};
+			}
+
+			// If they weren't part of the original member list
+			// they are new so just add them to new users
+			return {
+				...prev,
+				newUsers: [...prev.newUsers, friend],
+			};
+		});
+	}
+
+	function isFriendSelected(friend: User) {
+		// If the friend is in new users or existing members then return true
+		return [...form.newUsers, ...form.users].some(
+			(user) => user.internal_id === friend.internal_id,
+		);
+	}
+
+	function unSelectFriend(friend: User | Member) {
+		setForm((prev) => {
+			// If the user is part of the original member list
+			// then remove them from users and add them to removeMembers
+			const isOriginalMember = prev.users.find(
+				(member) => member.internal_id === friend.internal_id,
+			);
+			if (isOriginalMember) {
+				return {
+					...prev,
+					removeMembers: [...prev.removeMembers, isOriginalMember],
+					users: prev.users.filter(
+						(member) => member.internal_id !== friend.internal_id,
+					),
+				};
+			}
+
+			// If they weren't part of the original list that means
+			// they were newly added remove them from newUsers
+			return {
+				...prev,
+				newUsers: prev.newUsers.filter(
+					(user) => user.internal_id !== friend.internal_id,
+				),
+			};
+		});
+	}
+
+	function addGuest(name: string) {
+		const result = GuestName.safeParse(name.trim());
+		if (!result.success) {
+			toast({ message: "Invalid guest name", success: false });
+		} else {
+			setForm((prev) => ({
+				...prev,
+				newGuests: [...prev.newGuests, result.data!],
+			}));
+		}
+	}
+
+	function removeOriginalGuest(guest: Guest) {
+		setForm((prev) => ({
+			...prev,
+			guests: prev.guests.filter(
+				(existingGuest) => existingGuest.member_id !== guest.member_id,
+			),
+			removeMembers: [...prev.removeMembers, guest as Member],
+		}));
+	}
+
+	function removeNewGuest(guestIndex: number) {
+		setForm((prev) => ({
+			...prev,
+			newGuests: prev.newGuests.filter(
+				(_, index) => index === guestIndex,
+			),
+		}));
+	}
+
+	return {
+		form,
+		changeName,
+		setIcon,
+		setColor,
+		selectFriend,
+		isFriendSelected,
+		unSelectFriend,
+		addGuest,
+		removeOriginalGuest,
+		removeNewGuest,
+	};
 }

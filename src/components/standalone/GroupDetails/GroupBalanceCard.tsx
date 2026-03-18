@@ -5,7 +5,7 @@ function GroupBalanceCard({
 							  group,
 							  isFetching
 						  }: {
-	group: Group;
+	group: Group | undefined;
 	isFetching: boolean;
 }) {
 	return (
@@ -20,33 +20,33 @@ function GroupBalanceCard({
 			) : (
 				<>
 					<div
-						style={{ backgroundColor: `${group.color}30` }}
+						style={{ backgroundColor: `${group!.color}30` }}
 						className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-32 -mt-32"
 					></div>
 					<div
 						style={{
-							backgroundColor: `${group.color}20`,
-							borderColor: `${group.color}30`
+							backgroundColor: `${group!.color}20`,
+							borderColor: `${group!.color}30`
 						}}
 						className="w-24 h-24 rounded-2xl  flex items-center justify-center border shrink-0"
 					>
 						<span
-							style={{ fontSize: "40px", color: group.color }}
+							style={{ fontSize: "40px", color: group!.color }}
 							className="material-symbols-outlined"
 						>
-							{group.icon}
+							{group!.icon}
 						</span>
 					</div>
 					<div className="flex-1 flex flex-col justify-center gap-2 text-center md:text-left">
 						<h1 className="text-white text-4xl font-headline font-bold mb-2">
-							{group.name}
+							{group!.name}
 						</h1>
 						<span
 							className="bg-white/5 px-3 py-1 w-max rounded-full text-xs font-medium text-gray-400 border border-white/8 uppercase tracking-widest">
 							Shared Household
 						</span>
 						<span className="text-gray-500 text-sm">
-							Created {getMonthAndYear(group.created_at)}
+							Created {getMonthAndYear(group!.created_at)}
 						</span>
 					</div>
 					<div className="shrink-0 flex flex-col items-center md:items-end">

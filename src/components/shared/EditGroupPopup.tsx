@@ -1,21 +1,19 @@
-import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
 import IconSelect from "./IconSelect.tsx";
-import { useEffect, useMemo, useState } from "react";
 import ColorPicker from "./ColorPicker.tsx";
-import FriendPicker from "./FriendPicker.tsx";
-import { useGetAllFriends } from "../../lib/hooks/friend.hooks.ts";
 import Loader from "./Loader.tsx";
+import FriendPicker from "./FriendPicker.tsx";
 import Token from "./Token.tsx";
-import { useCreateGroupForm } from "../../lib/hooks/group.hooks.ts";
+import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
+import { useEditGroupForm } from "../../lib/hooks/group.hooks.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import type { GroupData } from "../../lib/types/types.ts";
+import { useGetAllFriends } from "../../lib/hooks/friend.hooks.ts";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "./CustomToast.tsx";
 
-/**
- * Fair warning this entire thing could either be the most genius thing I've ever
- * done or the most retarded either way it works
- */
-function CreateGroupPopup() {
-	const { closeCreateGroupPopup } = usePopup();
+function EditGroupPopup() {
 	const { user } = useAuth();
+	const { editGroupPopup, closeEditGroupPopup } = usePopup();
 	const [friendSearch, setFriendSearch] = useState("");
 	const [guestName, setGuestName] = useState("");
 	const {
@@ -23,6 +21,13 @@ function CreateGroupPopup() {
 		isFetching: fetchingFriends,
 		isError: friendError,
 	} = useGetAllFriends();
+
+	const queryClient = useQueryClient();
+	const groupData = queryClient.getQueryData<GroupData>([
+		"group",
+		editGroupPopup,
+	]);
+
 	const {
 		form,
 		changeName,
@@ -32,10 +37,9 @@ function CreateGroupPopup() {
 		selectFriend,
 		unSelectFriend,
 		addGuest,
-		removeGuest,
-		submitForm,
-		creatingGroup,
-	} = useCreateGroupForm();
+		removeOriginalGuest,
+		removeNewGuest,
+	} = useEditGroupForm(groupData!);
 
 	const filteredFriends = useMemo(() => {
 		const term = friendSearch.trim().toLowerCase();
@@ -58,10 +62,10 @@ function CreateGroupPopup() {
 			<div className="glass-panel w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
 				<div className="px-5 py-3 flex items-center justify-between border-b border-white/5">
 					<h2 className="text-xl font-extrabold tracking-tight text-white">
-						Create New Group
+						Edit Group
 					</h2>
 					<button
-						onClick={closeCreateGroupPopup}
+						onClick={closeEditGroupPopup}
 						className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors"
 					>
 						<span className="material-symbols-outlined text-slate-400">
@@ -167,15 +171,34 @@ function CreateGroupPopup() {
 										user!.internal_id === member.internal_id
 									}
 									avatar_url={member.avatar_url}
-									name={member.full_name}
+									name={member.name}
 									onRemove={() => unSelectFriend(member)}
 								/>
 							))}
-							{form.guests.map((guest, index) => (
+							{form.newUsers.map((newUser) => (
+								<Token
+									key={newUser.internal_id}
+									isCurrentUser={
+										user!.internal_id ===
+										newUser.internal_id
+									}
+									avatar_url={newUser.avatar_url}
+									name={newUser.full_name}
+									onRemove={() => unSelectFriend(newUser)}
+								/>
+							))}
+							{form.guests.map((guest) => (
+								<Token
+									key={guest.member_id}
+									name={guest.name}
+									onRemove={() => removeOriginalGuest(guest)}
+								/>
+							))}
+							{form.newGuests.map((guest, index) => (
 								<Token
 									key={index}
 									name={guest}
-									onRemove={() => removeGuest(index)}
+									onRemove={() => removeNewGuest(index)}
 								/>
 							))}
 						</div>
@@ -183,19 +206,15 @@ function CreateGroupPopup() {
 				</div>
 				<div className="p-5 bg-white/5 border-t border-white/5">
 					<button
-						onClick={submitForm}
+						// onClick={submitForm}
 						className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
 					>
-						{creatingGroup ? (
-							"Creating..."
-						) : (
-							<>
-								<span className="material-symbols-outlined">
-									group_add
-								</span>
-								Create Group
-							</>
-						)}
+						<>
+							<span className="material-symbols-outlined">
+								group_add
+							</span>
+							Edit Group
+						</>
 					</button>
 				</div>
 			</div>
@@ -203,4 +222,4 @@ function CreateGroupPopup() {
 	);
 }
 
-export default CreateGroupPopup;
+export default EditGroupPopup;
