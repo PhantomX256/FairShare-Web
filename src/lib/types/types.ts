@@ -43,6 +43,9 @@ export interface PopupContextType {
 	editGroupPopup: string;
 	openEditGroupPopup: (groupInternalId: string) => void;
 	closeEditGroupPopup: () => void;
+	editGuestNamePopup: { memberId: number, name: string };
+	openEditGuestNamePopup: (memberId: number, name: string) => void;
+	closeEditGuestNamePopup: () => void;
 }
 
 export interface Group {
