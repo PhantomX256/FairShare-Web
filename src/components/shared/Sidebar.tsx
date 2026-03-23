@@ -2,7 +2,7 @@ import { DASHBOARD_SIDEBAR_TABS } from "../../lib/constants/constants.ts";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
 import Loader from "./Loader.tsx";
-import UserProfilePopup from "./UserProfilePopup.tsx";
+import UserProfilePopup from "../standalone/Popups/UserProfilePopup.tsx";
 
 function Sidebar() {
 	const location = useLocation();

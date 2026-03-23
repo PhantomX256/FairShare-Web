@@ -3,7 +3,7 @@ import GroupsSection from "../components/standalone/Dashboard/GroupsSection.tsx"
 import FriendsSidebar from "../components/standalone/Dashboard/FriendsSidebar.tsx";
 import TopNav from "../components/standalone/Dashboard/TopNav.tsx";
 import { usePopup } from "../lib/hooks/context.hooks.ts";
-import CreateGroupPopup from "../components/shared/CreateGroupPopup.tsx";
+import CreateGroupPopup from "../components/standalone/Popups/CreateGroupPopup.tsx";
 
 function Dashboard() {
 	const { createGroupPopup } = usePopup();

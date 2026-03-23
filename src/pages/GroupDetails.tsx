@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
 import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
-import EditGroupPopup from "../components/shared/EditGroupPopup.tsx";
+import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
 
 function GroupDetails() {
 	const { groupId } = useParams();

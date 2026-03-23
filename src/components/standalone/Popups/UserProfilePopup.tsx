@@ -1,7 +1,7 @@
-import { useAuth, usePopup } from "../../lib/hooks/context.hooks.ts";
+import { useAuth, usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { useQueryClient } from "@tanstack/react-query";
-import type { User } from "../../lib/types/types.ts";
-import { getMonthAndYear } from "../../lib/utils/date.utils.ts";
+import type { User } from "../../../lib/types/types.ts";
+import { getMonthAndYear } from "../../../lib/utils/date.utils.ts";
 
 function UserProfilePopup() {
 	const { userProfilePopup, closeUserProfilePopup } = usePopup();

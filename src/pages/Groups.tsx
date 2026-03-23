@@ -3,7 +3,7 @@ import { useGetAllGroups } from "../lib/hooks/group.hooks.ts";
 import { useEffect } from "react";
 import { usePopup } from "../lib/hooks/context.hooks.ts";
 import { toast } from "../components/shared/CustomToast.tsx";
-import CreateGroupPopup from "../components/shared/CreateGroupPopup.tsx";
+import CreateGroupPopup from "../components/standalone/Popups/CreateGroupPopup.tsx";
 
 function Groups() {
 	const {
