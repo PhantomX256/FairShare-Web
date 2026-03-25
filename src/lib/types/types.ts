@@ -99,3 +99,13 @@ export interface EditGroupForm {
 	newGuests: string[];
 	removeMembers: Member[];
 }
+
+export interface EditGroupRequest {
+	groupId: string;
+	name?: string;
+	icon?: string;
+	color?: string;
+	newUsers: number[];
+	newGuests: string[];
+	removeMembers: number[];
+}

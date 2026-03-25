@@ -39,6 +39,8 @@ function EditGroupPopup() {
 		addGuest,
 		removeOriginalGuest,
 		removeNewGuest,
+		submitForm,
+		editingGroup,
 	} = useEditGroupForm(groupData!);
 
 	const filteredFriends = useMemo(() => {
@@ -206,14 +208,14 @@ function EditGroupPopup() {
 				</div>
 				<div className="p-5 bg-white/5 border-t border-white/5">
 					<button
-						// onClick={submitForm}
+						onClick={submitForm}
 						className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
 					>
 						<>
 							<span className="material-symbols-outlined">
 								group_add
 							</span>
-							Edit Group
+							{editingGroup ? "Editing..." : "Edit Group"}
 						</>
 					</button>
 				</div>

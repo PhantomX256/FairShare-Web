@@ -1,5 +1,6 @@
 import type {
 	EditGroupForm,
+	EditGroupRequest,
 	GroupData,
 	Guest,
 	Member,
@@ -38,4 +39,39 @@ function segregateUsersAndGuests(members: Member[]) {
 		},
 		{ users: [], guests: [] },
 	);
+}
+
+export function getChangedFields(
+	editGroupForm: EditGroupForm,
+	groupData: GroupData,
+): { editGroupRequest: EditGroupRequest | null; areFieldsDifferent: boolean } {
+	const { group } = groupData;
+
+	const editGroupRequest: EditGroupRequest = {
+		groupId: group.id,
+		name:
+			editGroupForm.name !== group.name ? editGroupForm.name : undefined,
+		icon:
+			editGroupForm.icon !== group.icon ? editGroupForm.icon : undefined,
+		color:
+			editGroupForm.color !== group.color
+				? editGroupForm.color
+				: undefined,
+		newUsers: editGroupForm.newUsers.map((user) => user.internal_id),
+		newGuests: editGroupForm.newGuests,
+		removeMembers: editGroupForm.removeMembers.map(
+			(member) => member.member_id,
+		),
+	};
+
+	return {
+		editGroupRequest: editGroupRequest,
+		areFieldsDifferent:
+			!!editGroupRequest.name ||
+			!!editGroupRequest.icon ||
+			!!editGroupRequest.color ||
+			editGroupRequest.newGuests.length !== 0 ||
+			editGroupRequest.newUsers.length !== 0 ||
+			editGroupRequest.removeMembers.length !== 0,
+	};
 }
