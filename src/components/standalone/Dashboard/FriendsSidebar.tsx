@@ -41,7 +41,7 @@ function FriendsSidebar() {
 						))}
 					</>
 				) : friends!.length == 0 ? (
-					<p>No friends found</p>
+					<p className="text-center p-4 text-gray-400 text-md">No friends found</p>
 				) : (
 					friends!.map((friend) => (
 						<FriendItem
