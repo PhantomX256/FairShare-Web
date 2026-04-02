@@ -8,11 +8,12 @@ import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
 import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
 import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
+import AddExpensePopup from "../components/standalone/Popups/AddExpensePopup.tsx";
 
 function GroupDetails() {
 	const { groupId } = useParams();
 	const { user } = useAuth();
-	const { editGroupPopup, openEditGroupPopup } = usePopup();
+	const { editGroupPopup, openEditGroupPopup, addExpensePopup } = usePopup();
 	const {
 		data: groupData,
 		isLoading: fetchingGroupData,
@@ -29,6 +30,7 @@ function GroupDetails() {
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
 			{editGroupPopup && <EditGroupPopup />}
+			{addExpensePopup && <AddExpensePopup />}
 			<header className="h-16 border-b border-brand-border flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
 				<h2 className="text-white font-headline font-semibold text-lg">
 					Group Details

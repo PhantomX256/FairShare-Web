@@ -1,6 +1,6 @@
 import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { useState } from "react";
-import { GuestName } from "../../../lib/validators/createGroup.validator.ts";
+import { GuestName } from "../../../lib/validators/group.validator.ts";
 import { toast } from "../../shared/CustomToast.tsx";
 import { useEditGuestName } from "../../../lib/hooks/group.hooks.ts";
 import { useParams } from "react-router-dom";

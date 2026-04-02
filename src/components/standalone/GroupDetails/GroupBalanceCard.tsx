@@ -1,16 +1,18 @@
 import type { Group } from "../../../lib/types/types.ts";
 import { getMonthAndYear } from "../../../lib/utils/date.utils.ts";
+import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 
 function GroupBalanceCard({
-							  group,
-							  isFetching
-						  }: {
+	group,
+	isFetching,
+}: {
 	group: Group | undefined;
 	isFetching: boolean;
 }) {
+	const { openAddExpensePopup } = usePopup();
+
 	return (
-		<div
-			className="lg:col-span-2 glass-card border border-white/8 bg-white/5 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+		<div className="lg:col-span-2 glass-card border border-white/8 bg-white/5 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
 			{isFetching ? (
 				<>
 					<div className="w-24 h-24 bg-white/10 animate-pulse rounded-2xl" />
@@ -26,7 +28,7 @@ function GroupBalanceCard({
 					<div
 						style={{
 							backgroundColor: `${group!.color}20`,
-							borderColor: `${group!.color}30`
+							borderColor: `${group!.color}30`,
 						}}
 						className="w-24 h-24 rounded-2xl  flex items-center justify-center border shrink-0"
 					>
@@ -41,8 +43,7 @@ function GroupBalanceCard({
 						<h1 className="text-white text-4xl font-headline font-bold mb-2">
 							{group!.name}
 						</h1>
-						<span
-							className="bg-white/5 px-3 py-1 w-max rounded-full text-xs font-medium text-gray-400 border border-white/8 uppercase tracking-widest">
+						<span className="bg-white/5 px-3 py-1 w-max rounded-full text-xs font-medium text-gray-400 border border-white/8 uppercase tracking-widest">
 							Shared Household
 						</span>
 						<span className="text-gray-500 text-sm">
@@ -57,11 +58,12 @@ function GroupBalanceCard({
 							$1,240.50
 						</p>
 						<button
-							className="mt-4 bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20">
+							onClick={openAddExpensePopup}
+							className="mt-4 bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20"
+						>
 							Add Expense
 						</button>
-					</div>
-					{" "}
+					</div>{" "}
 				</>
 			)}
 		</div>

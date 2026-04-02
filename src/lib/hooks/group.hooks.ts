@@ -26,7 +26,7 @@ import { toast } from "../../components/shared/CustomToast.tsx";
 import {
 	CreateGroupSchema,
 	GuestName,
-} from "../validators/createGroup.validator.ts";
+} from "../validators/group.validator.ts";
 import {
 	createStateForEditGroup,
 	getChangedFields,
