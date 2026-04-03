@@ -88,8 +88,8 @@ export function useAddExpenseForm() {
 					: prev.paidBy,
 				membersInvolved: getSplits(
 					prev.splitMode,
-					amount,
 					prev.membersInvolved,
+					amount,
 				),
 			}));
 		} catch {
@@ -125,14 +125,15 @@ export function useAddExpenseForm() {
 
 	function getSplits(
 		splitMode: string,
-		amount: number,
 		membersInvolved: {
 			memberId: number;
 			owedAmount: number;
 			owedAmountString: string;
 			parts: number;
 		}[],
+		amount?: number,
 	) {
+		amount = amount ? amount : form.amount;
 		if (splitMode === "equally") {
 			const newOwedAmount = amount / membersInvolved.length;
 
@@ -140,6 +141,7 @@ export function useAddExpenseForm() {
 				...member,
 				owedAmount: newOwedAmount,
 				owedAmountString: newOwedAmount.toFixed(3),
+				parts: 1,
 			}));
 		}
 		if (splitMode === "parts") {
@@ -190,7 +192,11 @@ export function useAddExpenseForm() {
 
 	function changeSplitMode(splitMode: string) {
 		if (form.splitMode === splitMode) return;
-		setForm((prev) => ({ ...prev, splitMode }));
+		setForm((prev) => ({
+			...prev,
+			splitMode,
+			membersInvolved: getSplits(splitMode, prev.membersInvolved),
+		}));
 	}
 
 	function changePayer(memberId: number) {
