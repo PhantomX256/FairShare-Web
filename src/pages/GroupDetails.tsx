@@ -9,6 +9,7 @@ import { toast } from "../components/shared/CustomToast.tsx";
 import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
 import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
 import AddExpensePopup from "../components/standalone/Popups/AddExpensePopup.tsx";
+import { useGetExpenses } from "../lib/hooks/expense.hooks.ts";
 
 function GroupDetails() {
 	const { groupId } = useParams();
@@ -20,10 +21,18 @@ function GroupDetails() {
 		isError: fetchError,
 	} = useGetGroupData(groupId!);
 
+	const {
+		data: expenses,
+		isLoading: fetchingExpenses,
+		isError: expensesError,
+	} = useGetExpenses(groupId!);
+
 	useEffect(() => {
 		if (fetchError)
 			toast({ message: "Failed to fetch group details", success: false });
-	}, [fetchError]);
+		if (expensesError)
+			toast({ message: "Failed to fetch expenses", success: false });
+	}, [fetchError, expensesError]);
 
 	if (!groupId || !groupData) return null;
 
@@ -79,7 +88,7 @@ function GroupDetails() {
 								All Expenses
 							</h3>
 							<div className="space-y-3">
-								{fetchingGroupData ? (
+								{fetchingExpenses ? (
 									<>
 										{Array.from({ length: 3 }).map(
 											(_, index) => (
@@ -96,8 +105,16 @@ function GroupDetails() {
 											),
 										)}
 									</>
+								) : expenses!.length > 0 ? (
+									expenses!.map((expense) => (
+										<ExpenseItem
+											key={expense.internal_id}
+										/>
+									))
 								) : (
-									<ExpenseItem />
+									<p className="text-center text-gray-600 text-md">
+										No expenses found
+									</p>
 								)}
 							</div>
 						</div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
@@ -22,9 +22,10 @@ import {
 	updateOwedAmount,
 } from "../utils/expense.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import { addExpense } from "../api/expense.api.ts";
+import { addExpense, getExpenses } from "../api/expense.api.ts";
 import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
+import { minutes } from "../utils/date.utils.ts";
 
 export function useAddExpenseForm() {
 	const { user } = useAuth();
@@ -325,5 +326,15 @@ export function useAddExpense() {
 				queryKey: ["group", addExpenseForm.groupId, "expenses"],
 			});
 		},
+	});
+}
+
+export function useGetExpenses(groupId: string) {
+	return useQuery({
+		queryKey: ["group", groupId, "expenses"],
+		queryFn: () => getExpenses(groupId),
+		refetchOnWindowFocus: false,
+		staleTime: minutes(5),
+		placeholderData: keepPreviousData,
 	});
 }
