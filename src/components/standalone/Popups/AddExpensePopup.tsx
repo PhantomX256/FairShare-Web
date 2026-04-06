@@ -5,6 +5,8 @@ import type { GroupData } from "../../../lib/types/types.ts";
 import MemberPicker from "../../shared/MemberPicker.tsx";
 import ExpenseMemberPicker from "../../shared/ExpenseMemberPicker.tsx";
 import { useAddExpenseForm } from "../../../lib/hooks/expense.hooks.ts";
+import { Milli } from "../../../lib/utils/expense.utils.ts";
+import ExpenseIconSelect from "../../shared/ExpenseIconSelect.tsx";
 
 function AddExpensePopup() {
 	const { closeAddExpensePopup } = usePopup();
@@ -18,6 +20,7 @@ function AddExpensePopup() {
 		form,
 		remainingBalance,
 		changeTitle,
+		changeIcon,
 		changeAmount,
 		isPayerSelected,
 		isMemberInvolved,
@@ -26,6 +29,12 @@ function AddExpensePopup() {
 		changePayer,
 		changePayerAmount,
 		changeInvolvement,
+		addPart,
+		removePart,
+		changeOwedAmount,
+		remainingOwedBalance,
+		isAdding,
+		submitForm
 	} = useAddExpenseForm();
 
 	return (
@@ -57,6 +66,9 @@ function AddExpensePopup() {
 								placeholder="e.g. Dinner at John's"
 								type="text"
 							/>
+						</div>
+						<div>
+							<ExpenseIconSelect selectedIcon={form.icon} setIcon={changeIcon} />
 						</div>
 						<div>
 							<label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">
@@ -122,7 +134,7 @@ function AddExpensePopup() {
 							))}
 						</div>
 						{remainingBalance !== 0 && (
-							<p className="text-slate-500 text-end mt-0 text-sm">{`Remaining: $${remainingBalance.toFixed(3)}`}</p>
+							<p className="text-slate-500 text-end mt-0 text-sm">{`Remaining: $${Milli.formatMilli(remainingBalance)}`}</p>
 						)}
 					</section>
 					<section className="space-y-6">
@@ -155,32 +167,46 @@ function AddExpensePopup() {
 							Split with
 						</label>
 						<div className="bg-white/5 rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden">
-							{members.map((member) => (
-								<ExpenseMemberPicker
-									key={member.member_id}
-									member={member}
-									isSelected={isMemberInvolved(
-										member.member_id,
-									)}
-									changeInvolvement={() =>
-										changeInvolvement(member.member_id)
-									}
-									owedAmountString={
-										form.membersInvolved.find(
-											(memberInvolved) =>
-												memberInvolved.memberId ===
-												member.member_id,
-										)?.owedAmountString ?? ""
-									}
-								/>
-							))}
+							{members.map((member) => {
+								const involved = form.membersInvolved.find(
+									(m) => m.memberId === member.member_id,
+								);
+
+								return (
+									<ExpenseMemberPicker
+										key={member.member_id}
+										member={member}
+										isSelected={isMemberInvolved(
+											member.member_id,
+										)}
+										changeInvolvement={() =>
+											changeInvolvement(member.member_id)
+										}
+										owedAmountString={
+											involved?.owedAmountString ?? ""
+										}
+										splitMode={form.splitMode}
+										parts={involved?.parts ?? 0}
+										addPart={() =>
+											addPart(member.member_id)
+										}
+										removePart={() =>
+											removePart(member.member_id)
+										}
+										changeOwedAmount={changeOwedAmount}
+									/>
+								);
+							})}
 						</div>
+						{remainingOwedBalance !== 0 && (
+							<p className="text-slate-500 text-end mt-0 text-sm">{`Remaining: $${Milli.formatMilli(remainingOwedBalance)}`}</p>
+						)}
 					</section>
 				</div>
 				<div className="p-5 bg-white/5 border-t border-white/5">
-					<button className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+					<button onClick={submitForm} className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
 						<span className="material-symbols-outlined">money</span>
-						Add Expense
+						{isAdding ? "Adding..." : "Add Expense"}
 					</button>
 				</div>
 			</div>

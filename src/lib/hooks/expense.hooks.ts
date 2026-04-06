@@ -1,9 +1,30 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import type { GroupData } from "../types/types.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
+import {
+	addInvolvement,
+	changeAmountAndRecalculateSplits,
+	changeAmountAndResetSplits,
+	changePaidAmount,
+	changePaymentModeAndResetSplits,
+	decrementPart,
+	deleteInvolvement,
+	getSplits,
+	incrementPart,
+	involveMemberAndRecalculatePartSplits,
+	Milli,
+	removeInvolvement,
+	removePayer,
+	sanitiseForm,
+	updateOwedAmount,
+} from "../utils/expense.utils.ts";
+import { toast } from "../../components/shared/CustomToast.tsx";
+import { addExpense } from "../api/expense.api.ts";
+import { ZodError } from "zod";
+import { AppError } from "../errors/app.error.ts";
 
 export function useAddExpenseForm() {
 	const { user } = useAuth();
@@ -16,9 +37,12 @@ export function useAddExpenseForm() {
 	const currentUserMemberId = members.find(
 		(member) => member.internal_id === user!.internal_id,
 	)!.member_id;
+	const { mutateAsync: addExpense, isPending: isAdding } = useAddExpense();
 
-	const [form, setForm] = useState({
+	const [form, setForm] = useState<AddExpenseForm>({
+		groupId: groupId!,
 		title: "",
+		icon: "payments",
 		amount: 0.0,
 		amountString: "",
 		areMultiplePayers: false,
@@ -54,6 +78,16 @@ export function useAddExpenseForm() {
 		[form.membersInvolved],
 	);
 
+	const totalOwedAmount = useMemo(
+		() => form.membersInvolved.reduce((sum, m) => sum + m.owedAmount, 0),
+		[form.membersInvolved],
+	);
+
+	const remainingOwedBalance = useMemo(
+		() => form.amount - totalOwedAmount,
+		[form.amount, totalOwedAmount],
+	);
+
 	function isPayerSelected(memberId: number) {
 		return form.paidBy.some((payer) => payer.memberId === memberId);
 	}
@@ -68,119 +102,36 @@ export function useAddExpenseForm() {
 		setForm((prev) => ({ ...prev, title }));
 	}
 
-	function changeAmount(amountString: string) {
-		try {
-			const amount = ExpenseAmount.parse(amountString);
-			setForm((prev) => ({
-				...prev,
-				amount,
-				amountString,
-				// If there aren't multiple payers then set the amount paid
-				// by the payer to the changed amount
-				paidBy: !prev.areMultiplePayers
-					? [
-							{
-								...prev.paidBy[0],
-								paidAmount: amount,
-								paidAmountString: amountString,
-							},
-						]
-					: prev.paidBy,
-				membersInvolved: getSplits(
-					prev.splitMode,
-					prev.membersInvolved,
-					amount,
-				),
-			}));
-		} catch {
-			// This usually happens when the amount field is empty or 0 in which case we reset all fields
-			setForm((prev) => ({
-				...prev,
-				amount: 0.0,
-				amountString: "",
-				paidBy: !prev.areMultiplePayers
-					? [
-							{
-								...prev.paidBy[0],
-								paidAmount: 0.0,
-								paidAmountString: "",
-							},
-						]
-					: prev.paidBy,
-				membersInvolved:
-					prev.splitMode !== "specific"
-						? [
-								...prev.membersInvolved.map(
-									(memberInvolved) => ({
-										...memberInvolved,
-										owedAmount: 0.0,
-										owedAmountString: "",
-									}),
-								),
-							]
-						: prev.membersInvolved,
-			}));
-		}
+	function changeIcon(icon: string) {
+		setForm((prev) => ({ ...prev, icon }));
 	}
 
-	function getSplits(
-		splitMode: string,
-		membersInvolved: {
-			memberId: number;
-			owedAmount: number;
-			owedAmountString: string;
-			parts: number;
-		}[],
-		amount?: number,
-	) {
-		amount = amount ? amount : form.amount;
-		if (splitMode === "equally") {
-			const newOwedAmount = amount / membersInvolved.length;
-
-			return membersInvolved.map((member) => ({
-				...member,
-				owedAmount: newOwedAmount,
-				owedAmountString: newOwedAmount.toFixed(3),
-				parts: 1,
-			}));
+	function changeAmount(amountString: string) {
+		try {
+			// Parse the field to ensure the entered value is >= 0
+			const amount = Milli.toMilli(ExpenseAmount.parse(amountString));
+			setForm((prev) =>
+				changeAmountAndRecalculateSplits(prev, amount, amountString),
+			);
+		} catch {
+			// This usually happens when the amount field is empty or 0 in which case we reset all fields
+			setForm((prev) => changeAmountAndResetSplits(prev));
 		}
-		if (splitMode === "parts") {
-			return membersInvolved.map((member) => {
-				const newOwedAmount = (amount / totalParts) * member.parts;
-
-				return {
-					...member,
-					owedAmount: newOwedAmount,
-					owedAmountString: newOwedAmount.toFixed(3),
-				};
-			});
-		}
-		return membersInvolved;
 	}
 
 	function changeNumberOfPayers(areMultiplePayers: boolean) {
 		// If the form is already toggled then don't change anything
 		if (form.areMultiplePayers === areMultiplePayers) return;
 
-		// If we are disabling multiple payers and there are more than one payer selected
-		// then default to single payer and set that to current user
+		// If we are disabling multiple payers and then we reset them
 		if (!areMultiplePayers) {
-			setForm((prev) => ({
-				...prev,
-				areMultiplePayers: areMultiplePayers,
-				paidBy: [
-					{
-						// If there were multiple payers selected then default to current user
-						// else retain the selected member
-						memberId:
-							prev.paidBy.length !== 1
-								? currentUserMemberId
-								: prev.paidBy[0].memberId,
-						paidAmount: prev.amount,
-						paidAmountString: prev.amountString,
-					},
-				],
-			}));
+			setForm((prev) =>
+				changePaymentModeAndResetSplits(
+					prev,
+					areMultiplePayers,
+					currentUserMemberId,
+				),
+			);
 			// Else we just switch modes and not tamper with paidBy
 		} else {
 			setForm((prev) => ({
@@ -190,16 +141,24 @@ export function useAddExpenseForm() {
 		}
 	}
 
-	function changeSplitMode(splitMode: string) {
+	function changeSplitMode(splitMode: SplitMode) {
+		// If the split mode is already the same don't do shit
 		if (form.splitMode === splitMode) return;
+
+		// Get new splits according to split mode and assign
 		setForm((prev) => ({
 			...prev,
 			splitMode,
-			membersInvolved: getSplits(splitMode, prev.membersInvolved),
+			// If we are switching from equally to parts then don't calculate splits
+			membersInvolved:
+				prev.splitMode === "equally" && splitMode === "parts"
+					? prev.membersInvolved
+					: getSplits(splitMode, prev.membersInvolved, prev.amount),
 		}));
 	}
 
 	function changePayer(memberId: number) {
+		// If the member being switch to is the same then do nothing
 		if (form.paidBy[0].memberId === memberId) return;
 		setForm((prev) => ({
 			...prev,
@@ -214,97 +173,119 @@ export function useAddExpenseForm() {
 	}
 
 	function changePayerAmount(memberId: number, paidAmountString: string) {
+		// If the form doesn't permit multiple payers then return
 		if (!form.areMultiplePayers) return;
 
 		// If the string is blank then remove that user
 		if (paidAmountString === "") {
-			setForm((prev) => ({
-				...prev,
-				paidBy: [
-					...prev.paidBy.filter(
-						(payer) => payer.memberId !== memberId,
-					),
-				],
-			}));
+			setForm((prev) => removePayer(prev, memberId));
+			return;
 		}
 
 		try {
-			const paidAmount = ExpenseAmount.parse(paidAmountString);
-			setForm((prev) => ({
-				...prev,
-				paidBy: [
-					...prev.paidBy.filter(
-						(payer) => payer.memberId !== memberId,
-					),
-					{
-						memberId,
-						paidAmountString,
-						paidAmount,
-					},
-				],
-			}));
+			// Parse the paidAmountString to get the paidAmount
+			const paidAmount = Milli.toMilli(
+				ExpenseAmount.parse(paidAmountString),
+			);
+			return setForm((prev) =>
+				changePaidAmount(prev, memberId, paidAmount, paidAmountString),
+			);
 		} catch {
 			return;
 		}
 	}
 
 	function changeInvolvement(memberId: number) {
-		if (
-			form.membersInvolved.some(
-				(memberInvolved) => memberInvolved.memberId === memberId,
-			)
-		) {
-			setForm((prev) => {
-				const newMembersInvolved = prev.membersInvolved.filter(
-					(memberInvolved) => memberInvolved.memberId !== memberId,
-				);
+		if (form.splitMode !== "equally") return;
 
-				const newOwedAmount =
-					newMembersInvolved.length > 0
-						? prev.amount / newMembersInvolved.length
-						: 0;
-
-				return {
-					...prev,
-					membersInvolved: newMembersInvolved.map(
-						(memberInvolved) => ({
-							...memberInvolved,
-							owedAmount: newOwedAmount,
-							owedAmountString: newOwedAmount.toFixed(3),
-						}),
-					),
-				};
-			});
+		if (isMemberInvolved(memberId)) {
+			setForm((prev) => removeInvolvement(prev, memberId));
 		} else {
-			setForm((prev) => {
-				const newOwedAmount =
-					prev.amount / (prev.membersInvolved.length + 1);
-
-				const newMembersInvolved = [
-					...prev.membersInvolved.map((memberInvolved) => ({
-						...memberInvolved,
-						owedAmount: newOwedAmount,
-					})),
-					{
-						memberId,
-						owedAmount: newOwedAmount,
-						owedAmountString: newOwedAmount.toFixed(3),
-						parts: 1,
-					},
-				];
-
-				return {
-					...prev,
-					membersInvolved: newMembersInvolved,
-				};
-			});
+			setForm((prev) => addInvolvement(prev, memberId));
 		}
+	}
+
+	function addPart(memberId: number) {
+		if (form.splitMode !== "parts") return;
+
+		setForm((prev) => {
+			// If the member was involved then increase their share and recalculate splits
+			// Else add them and recalculate splits
+			const updatedMembersInvolved = isMemberInvolved(memberId)
+				? incrementPart(
+						prev.membersInvolved,
+						prev.amount,
+						memberId,
+						totalParts,
+					)
+				: involveMemberAndRecalculatePartSplits(
+						prev.membersInvolved,
+						prev.amount,
+						memberId,
+						totalParts,
+					);
+
+			return {
+				...prev,
+				membersInvolved: updatedMembersInvolved,
+			};
+		});
+	}
+
+	function removePart(memberId: number) {
+		if (form.splitMode !== "parts") return;
+
+		setForm((prev) => {
+			return {
+				...prev,
+				membersInvolved: decrementPart(
+					prev.membersInvolved,
+					prev.amount,
+					memberId,
+					totalParts,
+				),
+			};
+		});
+	}
+
+	function changeOwedAmount(memberId: number, owedAmountString: string) {
+		if (form.splitMode !== "specific") return;
+
+		if (owedAmountString === "") {
+			setForm((prev) => deleteInvolvement(prev, memberId));
+			return;
+		}
+
+		try {
+			const owedAmount = Milli.toMilli(
+				ExpenseAmount.parse(owedAmountString),
+			);
+			setForm((prev) =>
+				updateOwedAmount(prev, memberId, owedAmount, owedAmountString),
+			);
+		} catch {
+			return;
+		}
+	}
+
+	async function submitForm() {
+		const sanitisedForm = sanitiseForm(form);
+		if (remainingOwedBalance !== 0 || remainingBalance !== 0) {
+			toast({
+				message: "Please check if there is any remaining balance",
+				success: false,
+			});
+			return;
+		}
+
+		await addExpense(sanitisedForm);
 	}
 
 	return {
 		form,
 		remainingBalance,
 		changeTitle,
+		changeIcon,
 		changeAmount,
 		isPayerSelected,
 		isMemberInvolved,
@@ -313,5 +294,36 @@ export function useAddExpenseForm() {
 		changePayer,
 		changePayerAmount,
 		changeInvolvement,
+		addPart,
+		removePart,
+		changeOwedAmount,
+		remainingOwedBalance,
+		submitForm,
+		isAdding,
 	};
+}
+
+export function useAddExpense() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: addExpense,
+		onError: (error) => {
+			if (error instanceof ZodError) {
+				return toast({ message: error.issues[0].message, success: false });
+			}
+			if (error instanceof AppError) {
+				return toast({ message: error.message, success: false });
+			}
+			toast({
+				message: "Something went wrong while adding expense",
+				success: false,
+			});
+		},
+		onSuccess: async (_, addExpenseForm) => {
+			await queryClient.invalidateQueries({
+				queryKey: ["group", addExpenseForm.groupId, "expenses"],
+			});
+		},
+	});
 }

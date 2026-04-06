@@ -1,4 +1,5 @@
 import type { Member } from "../../lib/types/types.ts";
+import { useAuth } from "../../lib/hooks/context.hooks.ts";
 
 function MemberPicker({
 	member,
@@ -15,6 +16,8 @@ function MemberPicker({
 	paidAmountString: string;
 	changePayerAmount: (memberId: number, paidAmountString: string) => void;
 }) {
+	const { user } = useAuth();
+
 	return (
 		<div
 			onClick={areMultiplePayers ? undefined : changePayer}
@@ -34,7 +37,7 @@ function MemberPicker({
 				</div>
 				<div className="flex flex-col">
 					<span className="text-sm font-bold text-white">
-						{member.name}
+						{`${member.name} ${member.internal_id === user!.internal_id ? "(You)" : ""}`}
 					</span>
 					<span className="text-[10px] text-slate-500">
 						{member.user_id ? "User" : "Guest"}

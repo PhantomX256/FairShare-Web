@@ -57,3 +57,17 @@ export const GROUP_COLORS = [
 	"#fe9a00",
 	"#ad46ff",
 ];
+
+export const MONEY_SCALE = 100;
+
+export const EXPENSE_ICONS = [
+	"payments",
+	"commute",
+	"restaurant",
+	"local_bar",
+	"shopping_bag",
+	"medical_services",
+	"sports_esports",
+	"confirmation_number",
+	"redeem"
+]

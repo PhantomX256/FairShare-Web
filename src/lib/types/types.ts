@@ -112,3 +112,41 @@ export interface EditGroupRequest {
 	newGuests: string[];
 	removeMembers: number[];
 }
+
+export interface Payer {
+	memberId: number;
+	paidAmount: number;
+	paidAmountString: string;
+}
+
+export interface InvolvedMember {
+	memberId: number;
+	owedAmount: number;
+	owedAmountString: string;
+	parts: number;
+}
+
+export type SplitMode = "equally" | "parts" | "specific"
+
+export interface AddExpenseForm {
+	groupId: string;
+	title: string;
+	icon: string;
+	amount: number;
+	amountString: string;
+	areMultiplePayers: boolean;
+	paidBy: Payer[];
+	splitMode: SplitMode;
+	membersInvolved: InvolvedMember[];
+}
+
+export interface AddExpenseRequest {
+	groupId: string;
+	title: string;
+	icon: string;
+	amount: number;
+	paidBy: Omit<Payer, "paidAmountString">[],
+	splitMode: SplitMode,
+	membersInvolved: Omit<InvolvedMember, "owedAmountString" | "parts">[]
+	isTransaction: boolean
+}
