@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
-import { useAuth } from "./context.hooks.ts";
+import { useAuth, usePopup } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
@@ -27,6 +32,9 @@ import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
 import { minutes } from "../utils/date.utils.ts";
 
+// I realize this could be very retarded
+// I could've very simply merged paidBy and membersInvolved
+// But oh well it's too late now maybe a fix for a later date
 export function useAddExpenseForm() {
 	const { user } = useAuth();
 	const { groupId } = useParams();
@@ -306,12 +314,16 @@ export function useAddExpenseForm() {
 
 export function useAddExpense() {
 	const queryClient = useQueryClient();
+	const { closeAddExpensePopup } = usePopup();
 
 	return useMutation({
 		mutationFn: addExpense,
 		onError: (error) => {
 			if (error instanceof ZodError) {
-				return toast({ message: error.issues[0].message, success: false });
+				return toast({
+					message: error.issues[0].message,
+					success: false,
+				});
 			}
 			if (error instanceof AppError) {
 				return toast({ message: error.message, success: false });
@@ -325,6 +337,7 @@ export function useAddExpense() {
 			await queryClient.invalidateQueries({
 				queryKey: ["group", addExpenseForm.groupId, "expenses"],
 			});
+			closeAddExpensePopup();
 		},
 	});
 }

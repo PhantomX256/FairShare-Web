@@ -9,7 +9,9 @@ import { AddExpenseFormSchema } from "../validators/expense.validator.ts";
 import { AppError } from "../errors/app.error.ts";
 
 export class Milli {
-	static toMilli(amount: number) {
+	static toMilli(amount: number | string) {
+		if (typeof amount === "string")
+			amount = parseFloat(amount);
 		return Math.round(amount * MONEY_SCALE);
 	}
 

@@ -1,4 +1,4 @@
-function SettlementItem() {
+function BalanceItem() {
 	return (
 		<div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/8 hover:bg-white/10 transition-all">
 			<div className="flex items-center gap-3">
@@ -12,4 +12,4 @@ function SettlementItem() {
 	);
 }
 
-export default SettlementItem;
+export default BalanceItem;

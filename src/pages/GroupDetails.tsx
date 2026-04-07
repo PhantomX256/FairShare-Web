@@ -1,5 +1,5 @@
 import GroupBalanceCard from "../components/standalone/GroupDetails/GroupBalanceCard.tsx";
-import SettlementsCard from "../components/standalone/GroupDetails/SettlementsCard.tsx";
+import BalanceCard from "../components/standalone/GroupDetails/BalanceCard.tsx";
 import ExpenseItem from "../components/standalone/GroupDetails/ExpenseItem.tsx";
 import MembersSection from "../components/standalone/GroupDetails/MembersSection.tsx";
 import { useGetGroupData } from "../lib/hooks/group.hooks.ts";
@@ -80,7 +80,7 @@ function GroupDetails() {
 							isFetching={fetchingGroupData}
 							group={groupData?.group}
 						/>
-						<SettlementsCard isFetching={fetchingGroupData} />
+						<BalanceCard isFetching={fetchingGroupData} />
 					</section>
 					<div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
 						<div className="text-white xl:col-span-8 space-y-6">
@@ -109,6 +109,7 @@ function GroupDetails() {
 									expenses!.map((expense) => (
 										<ExpenseItem
 											key={expense.internal_id}
+											expense={expense}
 										/>
 									))
 								) : (

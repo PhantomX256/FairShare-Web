@@ -25,6 +25,14 @@ export function getMonthAndYear(stringDate: string) {
 	});
 }
 
+export function getDayMonthAndYear(stringDate: string) {
+	return new Date(stringDate).toLocaleDateString("en-US", {
+		day: "2-digit",
+		month: "short",
+		year: "numeric",
+	});
+}
+
 export function getCurrentDayMonthDate() {
 	const now = new Date();
 

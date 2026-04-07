@@ -126,7 +126,7 @@ export interface InvolvedMember {
 	parts: number;
 }
 
-export type SplitMode = "equally" | "parts" | "specific"
+export type SplitMode = "equally" | "parts" | "specific";
 
 export interface AddExpenseForm {
 	groupId: string;
@@ -145,10 +145,10 @@ export interface AddExpenseRequest {
 	title: string;
 	icon: string;
 	amount: number;
-	paidBy: Omit<Payer, "paidAmountString">[],
-	splitMode: SplitMode,
-	membersInvolved: Omit<InvolvedMember, "owedAmountString" | "parts">[]
-	isTransaction: boolean
+	paidBy: Omit<Payer, "paidAmountString">[];
+	splitMode: SplitMode;
+	membersInvolved: Omit<InvolvedMember, "owedAmountString" | "parts">[];
+	isTransaction: boolean;
 }
 
 export interface Expense {
@@ -156,11 +156,10 @@ export interface Expense {
 	id: string;
 	title: string;
 	icon: string;
-	amount: string;
+	amount: number;
 	split_mode: string | null;
 	is_transaction: boolean;
-	created_at: Date;
-	user_owed_amount: string | null;
-	user_paid_amount: string | null;
-	paid_by_member_ids: number[];
+	created_at: string;
+	user_balance: number;
+	paid_by: number[];
 }
