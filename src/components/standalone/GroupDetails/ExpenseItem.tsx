@@ -2,7 +2,7 @@ import type { Expense, GroupData } from "../../../lib/types/types.ts";
 import { getDayMonthAndYear } from "../../../lib/utils/date.utils.ts";
 import { Milli } from "../../../lib/utils/expense.utils.ts";
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 function ExpenseItem({ expense }: { expense: Expense }) {
 	const { groupId } = useParams();
@@ -15,7 +15,10 @@ function ExpenseItem({ expense }: { expense: Expense }) {
 	const paidBy = members.find((m) => m.member_id === expense.paid_by[0])!;
 
 	return (
-		<div className="glass-card  border border-white/8 bg-white/5 p-4 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all group">
+		<Link
+			to={`/expense/${expense.id}`}
+			className="glass-card  border border-white/8 bg-white/5 p-4 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all group"
+		>
 			<div className="flex items-center gap-4">
 				<div
 					style={{
@@ -41,7 +44,7 @@ function ExpenseItem({ expense }: { expense: Expense }) {
 			</div>
 			<div className="text-right">
 				<p className="font-bold text-lg">
-					${Milli.formatMilli(expense.amount)}
+					${Milli.commaSeparatedFormat(expense.amount)}
 				</p>
 				<p
 					className={`text-[10px] uppercase tracking-tighter ${
@@ -51,10 +54,10 @@ function ExpenseItem({ expense }: { expense: Expense }) {
 					}`}
 				>
 					Your Balance: {expense.user_balance >= 0 ? "+" : "-"}$
-					{Milli.formatMilli(Math.abs(expense.user_balance))}
+					{Milli.commaSeparatedFormat(Math.abs(expense.user_balance))}
 				</p>
 			</div>
-		</div>
+		</Link>
 	);
 }
 

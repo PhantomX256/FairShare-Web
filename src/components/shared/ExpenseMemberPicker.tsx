@@ -11,6 +11,7 @@ function ExpenseMemberPicker({
 	addPart,
 	removePart,
 	changeOwedAmount,
+	formatOwedAmountString,
 }: {
 	member: Member;
 	isSelected: boolean;
@@ -21,6 +22,7 @@ function ExpenseMemberPicker({
 	addPart: () => void;
 	removePart: () => void;
 	changeOwedAmount: (memberId: number, owedAmountString: string) => void;
+	formatOwedAmountString: () => void;
 }) {
 	const { user } = useAuth();
 
@@ -63,8 +65,9 @@ function ExpenseMemberPicker({
 									e.target.value,
 								)
 							}
+							onBlur={formatOwedAmountString}
 							placeholder="0.00"
-							type="number"
+							type="text"
 						/>
 					) : owedAmountString !== "" ? (
 						owedAmountString

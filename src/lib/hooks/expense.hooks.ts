@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
 import {
@@ -27,10 +27,11 @@ import {
 	updateOwedAmount,
 } from "../utils/expense.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import { addExpense, getExpenses } from "../api/expense.api.ts";
+import { addExpense, getExpenseData, getExpenses } from "../api/expense.api.ts";
 import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
 import { minutes } from "../utils/date.utils.ts";
+import { ERROR_SEVERITY } from "../constants/constants.ts";
 
 // I realize this could be very retarded
 // I could've very simply merged paidBy and membersInvolved
@@ -97,6 +98,10 @@ export function useAddExpenseForm() {
 		[form.amount, totalOwedAmount],
 	);
 
+	useEffect(() => {
+		console.log(form);
+	}, [form]);
+
 	function isPayerSelected(memberId: number) {
 		return form.paidBy.some((payer) => payer.memberId === memberId);
 	}
@@ -126,6 +131,13 @@ export function useAddExpenseForm() {
 			// This usually happens when the amount field is empty or 0 in which case we reset all fields
 			setForm((prev) => changeAmountAndResetSplits(prev));
 		}
+	}
+
+	function formatAmountString() {
+		setForm((prev) => ({
+			...prev,
+			amountString: Milli.commaSeparatedFormat(prev.amount),
+		}));
 	}
 
 	function changeNumberOfPayers(areMultiplePayers: boolean) {
@@ -277,6 +289,26 @@ export function useAddExpenseForm() {
 		}
 	}
 
+	function formatOwedAmountString(memberId: number) {
+		if (form.splitMode !== "specific") return;
+
+		setForm((prev) => ({
+			...prev,
+			membersInvolved: [
+				...prev.membersInvolved.map((m) =>
+					m.memberId === memberId
+						? {
+								...m,
+								owedAmountString: Milli.commaSeparatedFormat(
+									m.owedAmount,
+								),
+							}
+						: m,
+				),
+			],
+		}));
+	}
+
 	async function submitForm() {
 		const sanitisedForm = sanitiseForm(form);
 		if (remainingOwedBalance !== 0 || remainingBalance !== 0) {
@@ -309,6 +341,8 @@ export function useAddExpenseForm() {
 		remainingOwedBalance,
 		submitForm,
 		isAdding,
+		formatAmountString,
+		formatOwedAmountString,
 	};
 }
 
@@ -349,5 +383,20 @@ export function useGetExpenses(groupId: string) {
 		refetchOnWindowFocus: false,
 		staleTime: minutes(5),
 		placeholderData: keepPreviousData,
+	});
+}
+
+export function useGetExpenseData(expenseId?: string) {
+	return useQuery({
+		queryKey: ["expense", expenseId],
+		queryFn: () => {
+			if (!expenseId)
+				throw new AppError("Invalid Expense ID", ERROR_SEVERITY.LOG);
+			return getExpenseData(expenseId);
+		},
+		refetchOnWindowFocus: false,
+		staleTime: minutes(5),
+		placeholderData: keepPreviousData,
+		enabled: !!expenseId,
 	});
 }

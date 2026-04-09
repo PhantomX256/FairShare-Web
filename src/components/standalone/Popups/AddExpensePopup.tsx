@@ -34,7 +34,9 @@ function AddExpensePopup() {
 		changeOwedAmount,
 		remainingOwedBalance,
 		isAdding,
-		submitForm
+		submitForm,
+		formatAmountString,
+		formatOwedAmountString,
 	} = useAddExpenseForm();
 
 	return (
@@ -68,7 +70,10 @@ function AddExpensePopup() {
 							/>
 						</div>
 						<div>
-							<ExpenseIconSelect selectedIcon={form.icon} setIcon={changeIcon} />
+							<ExpenseIconSelect
+								selectedIcon={form.icon}
+								setIcon={changeIcon}
+							/>
 						</div>
 						<div>
 							<label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">
@@ -80,12 +85,13 @@ function AddExpensePopup() {
 								</span>
 								<input
 									value={form.amountString}
+									onBlur={formatAmountString}
 									onChange={(e) =>
 										changeAmount(e.target.value)
 									}
 									className="w-full text-4xl font-bold bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-6 text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600"
 									placeholder="0.00"
-									type="number"
+									type="text"
 								/>
 							</div>
 						</div>
@@ -194,6 +200,11 @@ function AddExpensePopup() {
 											removePart(member.member_id)
 										}
 										changeOwedAmount={changeOwedAmount}
+										formatOwedAmountString={() =>
+											formatOwedAmountString(
+												member.member_id,
+											)
+										}
 									/>
 								);
 							})}
@@ -204,7 +215,10 @@ function AddExpensePopup() {
 					</section>
 				</div>
 				<div className="p-5 bg-white/5 border-t border-white/5">
-					<button onClick={submitForm} className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+					<button
+						onClick={submitForm}
+						className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+					>
 						<span className="material-symbols-outlined">money</span>
 						{isAdding ? "Adding..." : "Add Expense"}
 					</button>

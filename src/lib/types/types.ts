@@ -163,3 +163,26 @@ export interface Expense {
 	user_balance: number;
 	paid_by: number[];
 }
+
+export interface ExpenseData {
+	group: {
+		id: string;
+		name: string;
+		color: string;
+	};
+	expense: {
+		title: string;
+		icon: string;
+		amount: number;
+		split_mode: SplitMode | null;
+		created_at: string;
+	};
+	expenseMembers: {
+		member_id: number;
+		name: string;
+		avatar_url: string | null;
+		paid_amount: number;
+		owed_amount: number;
+		parts: number;
+	}[];
+}

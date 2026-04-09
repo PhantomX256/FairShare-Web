@@ -40,7 +40,7 @@ function GroupDetails() {
 		<main className="flex-1 flex flex-col max-h-screen">
 			{editGroupPopup && <EditGroupPopup />}
 			{addExpensePopup && <AddExpensePopup />}
-			<header className="h-16 border-b border-brand-border flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
+			<header className="h-16 border-b border-white/8 flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
 				<h2 className="text-white font-headline font-semibold text-lg">
 					Group Details
 				</h2>

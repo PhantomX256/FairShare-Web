@@ -1,17 +1,11 @@
 import { MONEY_SCALE } from "../constants/constants.ts";
-import type {
-	AddExpenseForm,
-	AddExpenseRequest,
-	InvolvedMember,
-	SplitMode,
-} from "../types/types.ts";
+import type { AddExpenseForm, AddExpenseRequest, InvolvedMember, SplitMode } from "../types/types.ts";
 import { AddExpenseFormSchema } from "../validators/expense.validator.ts";
 import { AppError } from "../errors/app.error.ts";
 
 export class Milli {
 	static toMilli(amount: number | string) {
-		if (typeof amount === "string")
-			amount = parseFloat(amount);
+		if (typeof amount === "string") amount = parseFloat(amount);
 		return Math.round(amount * MONEY_SCALE);
 	}
 
@@ -21,6 +15,13 @@ export class Milli {
 
 	static formatMilli(milli: number) {
 		return (milli / MONEY_SCALE).toFixed(2);
+	}
+
+	static commaSeparatedFormat(milli: number) {
+		return new Intl.NumberFormat("en-US", {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		}).format(milli / MONEY_SCALE);
 	}
 }
 
@@ -390,23 +391,6 @@ export function updateOwedAmount(
 	};
 }
 
-export function buildAddExpenseRequest(
-	addExpenseForm: AddExpenseForm,
-): AddExpenseRequest {
-	return {
-		...addExpenseForm,
-		paidBy: addExpenseForm.paidBy.map((p) => ({
-			memberId: p.memberId,
-			paidAmount: p.paidAmount,
-		})),
-		membersInvolved: addExpenseForm.membersInvolved.map((m) => ({
-			memberId: m.memberId,
-			owedAmount: m.owedAmount,
-		})),
-		isTransaction: false,
-	};
-}
-
 export function sanitiseForm(addExpenseForm: AddExpenseForm): AddExpenseForm {
 	return {
 		...addExpenseForm,
@@ -437,4 +421,19 @@ export function validateAddExpenseForm(
 		);
 
 	return addExpenseFormZod;
+}
+
+export function displaySplitMode(splitMode: SplitMode) {
+	if (splitMode === "equally") return "Equal Splits";
+	if (splitMode === "parts") return "Split by Parts";
+	return "Specific Splits";
+}
+
+export function getCommaSeparated(amount: string | number) {
+	if (typeof amount === "string") amount = parseFloat(amount);
+
+	return new Intl.NumberFormat("en-US", {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	}).format(amount);
 }
