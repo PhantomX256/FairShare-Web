@@ -7,6 +7,7 @@ import ExpenseMemberPicker from "../../shared/ExpenseMemberPicker.tsx";
 import { useAddExpenseForm } from "../../../lib/hooks/expense.hooks.ts";
 import { Milli } from "../../../lib/utils/expense.utils.ts";
 import ExpenseIconSelect from "../../shared/ExpenseIconSelect.tsx";
+import { CurrencyInput } from "react-currency-input-field";
 
 function AddExpensePopup() {
 	const { closeAddExpensePopup } = usePopup();
@@ -35,8 +36,6 @@ function AddExpensePopup() {
 		remainingOwedBalance,
 		isAdding,
 		submitForm,
-		formatAmountString,
-		formatOwedAmountString,
 	} = useAddExpenseForm();
 
 	return (
@@ -83,15 +82,13 @@ function AddExpensePopup() {
 								<span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">
 									$
 								</span>
-								<input
-									value={form.amountString}
-									onBlur={formatAmountString}
-									onChange={(e) =>
-										changeAmount(e.target.value)
-									}
+								<CurrencyInput
 									className="w-full text-4xl font-bold bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-6 text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-600"
 									placeholder="0.00"
-									type="text"
+									value={form.amountString}
+									onValueChange={(value) =>
+										changeAmount(value)
+									}
 								/>
 							</div>
 						</div>
@@ -200,11 +197,6 @@ function AddExpensePopup() {
 											removePart(member.member_id)
 										}
 										changeOwedAmount={changeOwedAmount}
-										formatOwedAmountString={() =>
-											formatOwedAmountString(
-												member.member_id,
-											)
-										}
 									/>
 								);
 							})}

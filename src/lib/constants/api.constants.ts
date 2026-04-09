@@ -17,3 +17,5 @@ export const GROUPS_URL = "/app/group";
 export const GROUP_MEMBER_URL = "/app/group/member";
 
 export const EXPENSE_URL = "/app/expense";
+
+export const RECENT_ACTIVITY_URL = EXPENSE_URL + "/recent";

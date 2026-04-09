@@ -1,5 +1,10 @@
 import { MONEY_SCALE } from "../constants/constants.ts";
-import type { AddExpenseForm, AddExpenseRequest, InvolvedMember, SplitMode } from "../types/types.ts";
+import type {
+	AddExpenseForm,
+	AddExpenseRequest,
+	InvolvedMember,
+	SplitMode,
+} from "../types/types.ts";
 import { AddExpenseFormSchema } from "../validators/expense.validator.ts";
 import { AppError } from "../errors/app.error.ts";
 

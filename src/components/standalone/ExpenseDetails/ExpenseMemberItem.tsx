@@ -8,8 +8,6 @@ function ExpenseMemberItem({
 	expenseMember: ExpenseData["expenseMembers"][0];
 	splitMode: SplitMode | null;
 }) {
-	console.log(expenseMember);
-
 	return (
 		<div className="glass-card bg-white/5 border border-white/8 p-5 rounded-2xl flex items-center justify-between transition-colors group hover:bg-white/10">
 			<div className="flex items-center gap-4">
@@ -28,10 +26,15 @@ function ExpenseMemberItem({
 					<p className="font-bold text-white">{expenseMember.name}</p>
 				</div>
 			</div>
-			<div className="text-right">
+			<div className="flex flex-col justify-center items-end">
 				<p className="font-black text-lg text-red-500">
 					-${Milli.commaSeparatedFormat(expenseMember.owed_amount)}
 				</p>
+				{splitMode === "parts" && (
+					<p className="text-xs uppercase text-slate-500">
+						{`${expenseMember.parts} ${expenseMember.parts === 1 ? "Part" : "Parts"}`}
+					</p>
+				)}
 			</div>
 		</div>
 	);

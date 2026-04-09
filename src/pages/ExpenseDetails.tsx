@@ -46,7 +46,7 @@ function ExpenseDetails() {
 									Split Details
 								</h3>
 								{isExpenseLoading ? (
-									<div className="w-20 h-5 bg-white/10 animate-pulse" />
+									<div className="w-20 h-5 rounded-full bg-white/10 animate-pulse" />
 								) : (
 									<div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-brand-border">
 										<span className="text-[10px] font-bold text-primary uppercase tracking-widest">

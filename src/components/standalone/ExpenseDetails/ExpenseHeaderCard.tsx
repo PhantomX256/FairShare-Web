@@ -44,14 +44,14 @@ function ExpenseHeaderCard({
 			)}
 			<div className="flex-1 text-center md:text-left">
 				{isLoading ? (
-					<div className="w-full h-10 bg-white/10 animate-pulse rounded-md mb-2" />
+					<div className="w-[75%] h-10 bg-white/10 animate-pulse rounded-md mb-2" />
 				) : (
 					<h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">
 						{expense && expense.title}
 					</h1>
 				)}
 				{isLoading ? (
-					<div className="w-[75%] h-5 rounded-md bg-white/10 animate-pulse" />
+					<div className="w-[60%] h-5 rounded-md bg-white/10 animate-pulse" />
 				) : (
 					<div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
 						<span className="bg-white/5 px-3 py-1 rounded-full text-xs font-medium text-gray-400 border border-white/8 uppercase tracking-widest">
@@ -67,7 +67,7 @@ function ExpenseHeaderCard({
 				)}
 			</div>
 			{isLoading ? (
-				<div className="w-24 h-20 bg-white/10 animate-pulse rounded-md" />
+				<div className="w-50 h-20 bg-white/10 animate-pulse rounded-md" />
 			) : (
 				<div className="shrink-0 flex flex-col items-center md:items-end">
 					<p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">

@@ -13,7 +13,7 @@ function Sidebar() {
 		<div className="bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex overflow-hidden">
 			{userProfilePopup !== 0 && <UserProfilePopup />}
 			<aside className="w-72 glass-sidebar h-screen flex flex-col p-6 lg:flex shrink-0">
-				<div className="flex items-center gap-3 mb-10 px-2">
+				<Link to="/dashboard" className="flex items-center gap-3 mb-10 px-2">
 					<div className="size-10 bg-primary rounded-xl flex items-center justify-center text-white premium-shadow">
 						<span className="material-symbols-outlined text-2xl font-bold">
 							balance
@@ -27,7 +27,7 @@ function Sidebar() {
 							Split Smarter
 						</p>
 					</div>
-				</div>
+				</Link>
 				<nav className="space-y-2 flex-1">
 					{DASHBOARD_SIDEBAR_TABS.map((tab) => (
 						<Link

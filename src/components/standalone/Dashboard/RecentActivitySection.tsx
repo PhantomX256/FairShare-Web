@@ -1,29 +1,52 @@
+import { useGetRecentActivity } from "../../../lib/hooks/expense.hooks.ts";
+import { useEffect } from "react";
+import { toast } from "../../shared/CustomToast.tsx";
+import RecentActivityItem from "./RecentActivityItem.tsx";
+
 function RecentActivitySection() {
-    return (
-        <section className="pt-4 space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Recent Activity</h2>
-                <button className="text-primary text-sm font-bold hover:underline">View All History</button>
-            </div>
-            <div className="space-y-3">
-                <div
-                    className="glass-card bg-white/3 border border-white/8 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer">
-                    <div className="size-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-100">
-                        <span className="material-symbols-outlined">bolt</span>
-                    </div>
-                    <div className="flex-1">
-                        <p className="text-sm font-bold">Electricity Bill</p>
-                        <p className="text-xs text-slate-500">You added to <span
-                            className="font-semibold text-slate-300">Apartment 4B</span></p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-sm font-bold text-emerald-500">$85.20</p>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Yesterday</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+	const {
+		data: recentActivities,
+		isLoading: isRecentLoading,
+		isError,
+	} = useGetRecentActivity();
+
+	useEffect(() => {
+		if (isError)
+			toast({
+				message: "Error fetching Recent Activity",
+				success: false,
+			});
+	}, [isError]);
+
+	return (
+		<section className="pt-4 space-y-6">
+			<h2 className="text-xl font-bold">Recent Activity</h2>
+			<div className="space-y-3">
+				{isRecentLoading ? (
+					Array.from({ length: 1 }).map((_, index) => (
+						<div
+							key={index}
+							className="w-full bg-white/5 border border-white/8 h-20 flex rounded-2xl items-center justify-between p-4"
+						>
+							<div className="flex flex-1 items-center gap-4">
+								<div className="w-12 h-12 bg-white/10 animate-pulse rounded-xl" />
+								<div className="w-1/2 h-4 bg-white/10 animate-pulse rounded" />
+							</div>
+							<div className="w-10 h-7 bg-white/10 animate-pulse rounded" />
+						</div>
+					))
+				) : recentActivities!.length > 0 ? (
+					recentActivities!.map((recentActivity) => (
+						<RecentActivityItem recentActivity={recentActivity} />
+					))
+				) : (
+					<p className="text-gray-500 text-sm text-center">
+						No recent activity
+					</p>
+				)}
+			</div>
+		</section>
+	);
 }
 
 export default RecentActivitySection;

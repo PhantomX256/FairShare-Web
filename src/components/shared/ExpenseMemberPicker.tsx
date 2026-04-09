@@ -1,5 +1,7 @@
 import type { Member, SplitMode } from "../../lib/types/types.ts";
 import { useAuth } from "../../lib/hooks/context.hooks.ts";
+import { CurrencyInput } from "react-currency-input-field";
+import { getCommaSeparated } from "../../lib/utils/expense.utils.ts";
 
 function ExpenseMemberPicker({
 	member,
@@ -11,7 +13,6 @@ function ExpenseMemberPicker({
 	addPart,
 	removePart,
 	changeOwedAmount,
-	formatOwedAmountString,
 }: {
 	member: Member;
 	isSelected: boolean;
@@ -21,8 +22,7 @@ function ExpenseMemberPicker({
 	parts: number;
 	addPart: () => void;
 	removePart: () => void;
-	changeOwedAmount: (memberId: number, owedAmountString: string) => void;
-	formatOwedAmountString: () => void;
+	changeOwedAmount: (memberId: number, owedAmountString?: string) => void;
 }) {
 	const { user } = useAuth();
 
@@ -56,21 +56,16 @@ function ExpenseMemberPicker({
 				<div className="flex items-center gap-1 bg-white/5 border border-white/8 text-slate-500 px-3 py-1 rounded-xl">
 					<span className="text-slate-500 text-md">$</span>
 					{splitMode === "specific" ? (
-						<input
+						<CurrencyInput
 							className="text-white placeholder-slate-600 text-md w-30 p-0 m-0"
 							value={owedAmountString}
-							onChange={(e) =>
-								changeOwedAmount(
-									member.member_id,
-									e.target.value,
-								)
+							onValueChange={(value) =>
+								changeOwedAmount(member.member_id, value)
 							}
-							onBlur={formatOwedAmountString}
 							placeholder="0.00"
-							type="text"
 						/>
 					) : owedAmountString !== "" ? (
-						owedAmountString
+						getCommaSeparated(owedAmountString)
 					) : (
 						"0.00"
 					)}

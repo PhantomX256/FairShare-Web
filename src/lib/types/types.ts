@@ -186,3 +186,26 @@ export interface ExpenseData {
 		parts: number;
 	}[];
 }
+
+export interface RecentActivity {
+	expense: {
+		id: string;
+		title: string;
+		icon: string;
+		created_at: string;
+		updated_at: string;
+	};
+	group: {
+		name: string;
+		color: string;
+	};
+	created_by: {
+		internal_id: number;
+		name: string | null;
+	};
+	modified_by: {
+		internal_id: number;
+		name: string | null;
+	};
+	user_balance: number;
+}

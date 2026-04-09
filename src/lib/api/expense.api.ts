@@ -1,7 +1,7 @@
-import type { AddExpenseForm, Expense, ExpenseData } from "../types/types.ts";
+import type { AddExpenseForm, Expense, ExpenseData, RecentActivity } from "../types/types.ts";
 import { validateAddExpenseForm } from "../utils/expense.utils.ts";
 import api from "./axios.config.ts";
-import { EXPENSE_URL } from "../constants/api.constants.ts";
+import { EXPENSE_URL, RECENT_ACTIVITY_URL } from "../constants/api.constants.ts";
 
 export async function getExpenses(groupId: string): Promise<Expense[]> {
 	const { data } = await api.get(EXPENSE_URL, {
@@ -18,4 +18,9 @@ export async function addExpense(addExpenseForm: AddExpenseForm) {
 export async function getExpenseData(expenseId: string): Promise<ExpenseData> {
 	const { data } = await api.get(`${EXPENSE_URL}/${expenseId}`);
 	return data.expenseData;
+}
+
+export async function getRecentActivity(): Promise<RecentActivity[]> {
+	const { data } = await api.get(RECENT_ACTIVITY_URL);
+	return data.recentActivity;
 }

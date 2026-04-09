@@ -27,7 +27,12 @@ import {
 	updateOwedAmount,
 } from "../utils/expense.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import { addExpense, getExpenseData, getExpenses } from "../api/expense.api.ts";
+import {
+	addExpense,
+	getExpenseData,
+	getExpenses,
+	getRecentActivity,
+} from "../api/expense.api.ts";
 import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
 import { minutes } from "../utils/date.utils.ts";
@@ -120,24 +125,21 @@ export function useAddExpenseForm() {
 		setForm((prev) => ({ ...prev, icon }));
 	}
 
-	function changeAmount(amountString: string) {
+	function changeAmount(amountString?: string) {
 		try {
 			// Parse the field to ensure the entered value is >= 0
 			const amount = Milli.toMilli(ExpenseAmount.parse(amountString));
 			setForm((prev) =>
-				changeAmountAndRecalculateSplits(prev, amount, amountString),
+				changeAmountAndRecalculateSplits(
+					prev,
+					amount,
+					amountString ?? "",
+				),
 			);
 		} catch {
 			// This usually happens when the amount field is empty or 0 in which case we reset all fields
 			setForm((prev) => changeAmountAndResetSplits(prev));
 		}
-	}
-
-	function formatAmountString() {
-		setForm((prev) => ({
-			...prev,
-			amountString: Milli.commaSeparatedFormat(prev.amount),
-		}));
 	}
 
 	function changeNumberOfPayers(areMultiplePayers: boolean) {
@@ -269,10 +271,10 @@ export function useAddExpenseForm() {
 		});
 	}
 
-	function changeOwedAmount(memberId: number, owedAmountString: string) {
+	function changeOwedAmount(memberId: number, owedAmountString?: string) {
 		if (form.splitMode !== "specific") return;
 
-		if (owedAmountString === "") {
+		if (!owedAmountString) {
 			setForm((prev) => deleteInvolvement(prev, memberId));
 			return;
 		}
@@ -287,26 +289,6 @@ export function useAddExpenseForm() {
 		} catch {
 			return;
 		}
-	}
-
-	function formatOwedAmountString(memberId: number) {
-		if (form.splitMode !== "specific") return;
-
-		setForm((prev) => ({
-			...prev,
-			membersInvolved: [
-				...prev.membersInvolved.map((m) =>
-					m.memberId === memberId
-						? {
-								...m,
-								owedAmountString: Milli.commaSeparatedFormat(
-									m.owedAmount,
-								),
-							}
-						: m,
-				),
-			],
-		}));
 	}
 
 	async function submitForm() {
@@ -341,8 +323,6 @@ export function useAddExpenseForm() {
 		remainingOwedBalance,
 		submitForm,
 		isAdding,
-		formatAmountString,
-		formatOwedAmountString,
 	};
 }
 
@@ -398,5 +378,15 @@ export function useGetExpenseData(expenseId?: string) {
 		staleTime: minutes(5),
 		placeholderData: keepPreviousData,
 		enabled: !!expenseId,
+	});
+}
+
+export function useGetRecentActivity() {
+	return useQuery({
+		queryKey: ["recentActivity"],
+		queryFn: getRecentActivity,
+		refetchOnWindowFocus: false,
+		staleTime: minutes(5),
+		placeholderData: keepPreviousData,
 	});
 }
