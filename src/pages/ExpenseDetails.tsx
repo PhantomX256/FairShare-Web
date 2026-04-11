@@ -8,11 +8,13 @@ import { z } from "zod";
 import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
 import { displaySplitMode } from "../lib/utils/expense.utils.ts";
+import { useAuth } from "../lib/hooks/context.hooks.ts";
 
 function ExpenseDetails() {
 	const { expenseId: preParsedExpenseId } = useParams();
 	const result = z.uuid().safeParse(preParsedExpenseId);
 	const expenseId = result.data;
+	const { user } = useAuth();
 
 	const {
 		data: expenseData,
@@ -40,7 +42,7 @@ function ExpenseDetails() {
 						group={expenseData?.group}
 					/>
 					<div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-						<div className="xl:col-span-8 space-y-6">
+						<div className="xl:col-span-7 space-y-6">
 							<div className="flex items-center justify-between">
 								<h3 className="text-xl text-white font-bold">
 									Split Details
@@ -87,6 +89,10 @@ function ExpenseDetails() {
 														expenseData!.expense
 															.split_mode
 													}
+													isCurrentUser={
+														expenseMember.user_id ===
+														user!.internal_id
+													}
 												/>
 											))}
 							</div>
@@ -104,7 +110,7 @@ function ExpenseDetails() {
 							{/*	</div>*/}
 							{/*</div>*/}
 						</div>
-						<div className="xl:col-span-4 space-y-6">
+						<div className="xl:col-span-5 space-y-6">
 							<h3 className="text-xl font-bold text-white mb-6">
 								Paid By
 							</h3>
@@ -132,6 +138,10 @@ function ExpenseDetails() {
 										.map((expenseMember) => (
 											<PayerMemberItem
 												expenseMember={expenseMember}
+												isCurrentUser={
+													user!.internal_id ===
+													expenseMember.user_id
+												}
 											/>
 										))
 								)}

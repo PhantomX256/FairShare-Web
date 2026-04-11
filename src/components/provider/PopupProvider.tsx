@@ -2,7 +2,7 @@ import { type ReactNode, useState } from "react";
 import { PopupContext } from "../context/PopupContext.ts";
 
 export function PopupProvider({ children }: { children: ReactNode }) {
-	const [userProfilePopup, setUserProfilePopup] = useState(0);
+	const [userProfilePopup, setUserProfilePopup] = useState("");
 	const [createGroupPopup, setCreateGroupPopup] = useState(false);
 	const [editGroupPopup, setEditGroupPopup] = useState("");
 	const [editGuestNamePopup, setEditGuestNamePopup] = useState({
@@ -15,9 +15,9 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 		<PopupContext.Provider
 			value={{
 				userProfilePopup,
-				openUserProfilePopup: (userInternalId: number) =>
-					setUserProfilePopup(userInternalId),
-				closeUserProfilePopup: () => setUserProfilePopup(0),
+				openUserProfilePopup: (userId: string) =>
+					setUserProfilePopup(userId),
+				closeUserProfilePopup: () => setUserProfilePopup(""),
 				createGroupPopup,
 				openCreateGroupPopup: () => setCreateGroupPopup(true),
 				closeCreateGroupPopup: () => setCreateGroupPopup(false),

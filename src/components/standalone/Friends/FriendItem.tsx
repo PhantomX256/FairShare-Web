@@ -1,12 +1,21 @@
 import type { User } from "../../../lib/types/types.ts";
-import {getRelativeTime} from "../../../lib/utils/date.utils.ts";
+import { getRelativeTime } from "../../../lib/utils/date.utils.ts";
 import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 
-function FriendItem({ friend, isFriendSidebar=false }: { friend: User, isFriendSidebar?: boolean }) {
+function FriendItem({
+	friend,
+	isFriendSidebar = false,
+}: {
+	friend: User;
+	isFriendSidebar?: boolean;
+}) {
 	const { openUserProfilePopup } = usePopup();
 
 	return (
-		<div onClick={() => openUserProfilePopup(friend.internal_id) } className="flex cursor-pointer items-center justify-between p-4 hover:bg-white/5 transition-colors">
+		<div
+			onClick={() => openUserProfilePopup(friend.id)}
+			className="flex cursor-pointer items-center justify-between p-4 hover:bg-white/5 transition-colors"
+		>
 			<div className="flex items-center gap-4">
 				<img
 					className={`${isFriendSidebar ? "size-10" : "size-12"} rounded-full object-cover`}
@@ -14,7 +23,9 @@ function FriendItem({ friend, isFriendSidebar=false }: { friend: User, isFriendS
 					src={friend.avatar_url}
 				/>
 				<div>
-					<p className={`${isFriendSidebar && "text-sm"} font-bold`}>{friend.full_name}</p>
+					<p className={`${isFriendSidebar && "text-sm"} font-bold`}>
+						{friend.full_name}
+					</p>
 					<p className="text-xs text-slate-500">{`Friends since ${getRelativeTime(friend.created_at)}`}</p>
 				</div>
 			</div>

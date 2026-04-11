@@ -11,9 +11,12 @@ function Sidebar() {
 
 	return (
 		<div className="bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex overflow-hidden">
-			{userProfilePopup !== 0 && <UserProfilePopup />}
+			{userProfilePopup && <UserProfilePopup />}
 			<aside className="w-72 glass-sidebar h-screen flex flex-col p-6 lg:flex shrink-0">
-				<Link to="/dashboard" className="flex items-center gap-3 mb-10 px-2">
+				<Link
+					to="/dashboard"
+					className="flex items-center gap-3 mb-10 px-2"
+				>
 					<div className="size-10 bg-primary rounded-xl flex items-center justify-center text-white premium-shadow">
 						<span className="material-symbols-outlined text-2xl font-bold">
 							balance
@@ -49,7 +52,10 @@ function Sidebar() {
 						</span>
 						Scan Receipt
 					</button>
-					<div onClick={() => openUserProfilePopup(user!.internal_id)} className="cursor-pointer p-4 rounded-2xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-100">
+					<div
+						onClick={() => openUserProfilePopup(user!.id)}
+						className="cursor-pointer p-4 rounded-2xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-100"
+					>
 						<div className="flex items-center gap-3">
 							<img
 								className="size-10 rounded-full border border-white/10 object-cover"

@@ -4,9 +4,11 @@ import { Milli } from "../../../lib/utils/expense.utils.ts";
 function ExpenseMemberItem({
 	expenseMember,
 	splitMode,
+	isCurrentUser,
 }: {
 	expenseMember: ExpenseData["expenseMembers"][0];
 	splitMode: SplitMode | null;
+	isCurrentUser: boolean;
 }) {
 	return (
 		<div className="glass-card bg-white/5 border border-white/8 p-5 rounded-2xl flex items-center justify-between transition-colors group hover:bg-white/10">
@@ -23,7 +25,7 @@ function ExpenseMemberItem({
 					</div>
 				)}
 				<div>
-					<p className="font-bold text-white">{expenseMember.name}</p>
+					<p className="font-bold text-white">{`${expenseMember.name} ${isCurrentUser ? "(You)" : ""} ${expenseMember.user_id ? "" : "(G)"}`}</p>
 				</div>
 			</div>
 			<div className="flex flex-col justify-center items-end">

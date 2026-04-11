@@ -7,6 +7,11 @@ export interface User {
 	created_at: string;
 }
 
+export interface FriendData {
+	friendsSince: string;
+	sharedGroupsIds: string[];
+}
+
 export interface AuthContextType {
 	user: User | null;
 	isLoggedIn: boolean;
@@ -34,8 +39,8 @@ export interface SentFriendRequest {
 }
 
 export interface PopupContextType {
-	userProfilePopup: number;
-	openUserProfilePopup: (userInternalId: number) => void;
+	userProfilePopup: string;
+	openUserProfilePopup: (userId: string) => void;
 	closeUserProfilePopup: () => void;
 	createGroupPopup: boolean;
 	openCreateGroupPopup: () => void;
@@ -184,6 +189,7 @@ export interface ExpenseData {
 		paid_amount: number;
 		owed_amount: number;
 		parts: number;
+		user_id: number | null;
 	}[];
 }
 
