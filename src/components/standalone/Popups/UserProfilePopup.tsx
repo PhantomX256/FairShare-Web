@@ -14,10 +14,7 @@ function UserProfilePopup() {
 
 	const isCurrentUserProfile = userProfilePopup === user!.id;
 
-	const friend = queryClient
-		.getQueryData<User[]>(["friends"])!
-		.find((f) => f.id === userProfilePopup);
-
+	const friends = queryClient.getQueryData<User[]>(["friends"])!;
 	const groups = queryClient.getQueryData<Group[]>(["groups"])!;
 
 	const {
@@ -34,7 +31,9 @@ function UserProfilePopup() {
 			});
 	}, [isError]);
 
-	const profile = isCurrentUserProfile ? user! : friend!;
+	const profile = isCurrentUserProfile
+		? user!
+		: friends.find((f) => f.id === userProfilePopup)!;
 
 	return (
 		<div className="fixed top-0 left-0 flex items-center justify-center backdrop-blur-sm h-screen w-screen z-40 bg-black/30">

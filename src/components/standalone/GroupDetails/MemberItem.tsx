@@ -1,64 +1,67 @@
-import type {Member} from "../../../lib/types/types.ts";
-import {useAuth} from "../../../lib/hooks/context.hooks.ts";
+import type { Member } from "../../../lib/types/types.ts";
+import { Milli } from "../../../lib/utils/expense.utils.ts";
 
-function MemberItem({member, onClick}: { member: Member, onClick?: () => void }) {
-    const {user} = useAuth();
+function MemberItem({
+	member,
+	isCurrentUser,
+	isGuest,
+	onClick,
+	balance,
+}: {
+	member: Member;
+	isCurrentUser: boolean;
+	isGuest: boolean;
+	onClick?: () => void;
+	balance: number;
+}) {
+	const isBalanceNegative = balance < 0;
+	const color = isBalanceNegative ? "red-500" : "emerald-500";
 
-    return (
-        <>
-            <div className="p-4 flex items-center justify-between hover:bg-white/8 transition-all group">
-                <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-full border-2 flex items-center justify-center border-emerald-500/50 p-0.5 bg-primary/20">
-                        {member.avatar_url ? (
-                            <img
-                                alt={`Profile photo of ${member.name}`}
-                                className="w-full h-full rounded-full object-cover"
-                                src={member.avatar_url}
-                            />
-                        ) : (
-                            member.name[0].toUpperCase()
-                        )}
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold">{`${member.name} ${member.internal_id === user!.internal_id ? "(You)" : ""} ${!member.internal_id ? "(G)" : ""}`}</p>
-                        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">
-                            Is owed
-                        </p>
-                    </div>
-                    {onClick &&
-                        <button
-                            onClick={onClick}
-                            className="w-10 h-10 flex items-center justify-center rounded-full text-transparent group-hover:text-gray-400 hover:text-white transition-all duration-300"
-                        >
-                            <span className="material-symbols-outlined">
-                                edit
-                            </span>
-                        </button>}
-                </div>
-                <p className="text-emerald-500 font-bold text-sm">+$142.30</p>
-            </div>
-            {/*<div className="p-4 flex items-center justify-between">*/}
-            {/*	<div className="flex items-center gap-3">*/}
-            {/*		<div className="w-10 h-10 rounded-full border-2 border-red-500/50 p-0.5">*/}
-            {/*			<img*/}
-            {/*				alt="Sarah"*/}
-            {/*				className="w-full h-full rounded-full object-cover"*/}
-            {/*				data-alt="Sarah profile picture"*/}
-            {/*				src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkdmqj5-RmkGMdl1lLAhrmJuk5zPI_pzKwe7O5OFS1cmnO5HQnsrYduE2ry1Ssm7Le4uaV15aV4PWmW5ISeCX0zgncsl7JLJEapArKnDKO4y6WL1Sl_cih1vPgA8Iq6X-QODrCOzcwG8DVeHvdr5_YM04BM_XczOROiQ6vMNBiVfe0Iygyyx7SUBOO_gpNG9uD3e-bKa_4siRVSMJeCj6Z4mWtI30eZjBZbsR4DAZBp3ngICna0-PhiTS6pnRhTK1Jq-VnTfhv670"*/}
-            {/*			/>*/}
-            {/*		</div>*/}
-            {/*		<div>*/}
-            {/*			<p className="text-sm font-semibold">Sarah</p>*/}
-            {/*			<p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">*/}
-            {/*				Owes*/}
-            {/*			</p>*/}
-            {/*		</div>*/}
-            {/*	</div>*/}
-            {/*	<p className="text-red-500 font-bold text-sm">-$25.00</p>*/}
-            {/*</div>*/}
-        </>
-    );
+	return (
+		<>
+			<div className="p-4 flex items-center justify-between hover:bg-white/8 transition-all group">
+				<div className="flex items-center gap-2">
+					<div
+						className={`size-9 rounded-full border-2 flex items-center justify-center border-${color} p-0.5 bg-primary/20`}
+					>
+						{isGuest ? (
+							member.name[0].toUpperCase()
+						) : (
+							<img
+								alt={`Profile photo of ${member.name}`}
+								className="w-full h-full rounded-full object-cover"
+								src={member.avatar_url}
+							/>
+						)}
+					</div>
+					<div>
+						<p className="text-xs font-semibold">
+							{`${isCurrentUser ? "You" : member.name} ${isGuest ? "(G)" : ""}`}
+						</p>
+						<p
+							className={`text-[9px] text-${color} font-bold uppercase tracking-widest`}
+						>
+							{isBalanceNegative ? "Owes" : "Is Owed"}
+						</p>
+					</div>
+					{onClick && (
+						<button
+							onClick={onClick}
+							className="p-0 m-0 text-transparent group-hover:text-gray-400 hover:text-white transition-all duration-300"
+						>
+							<span className="material-symbols-outlined text-[5px] leading-none">
+								edit
+							</span>
+						</button>
+					)}
+				</div>
+				<p className={`text-${color} font-bold text-sm`}>
+					{isBalanceNegative ? "-" : "+"}$
+					{Milli.commaSeparatedFormat(Math.abs(balance))}
+				</p>
+			</div>
+		</>
+	);
 }
 
 export default MemberItem;

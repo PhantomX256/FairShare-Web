@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
-import {
-	keepPreviousData,
-	useMutation,
-	useQuery,
-	useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
@@ -24,15 +19,10 @@ import {
 	removeInvolvement,
 	removePayer,
 	sanitiseForm,
-	updateOwedAmount,
+	updateOwedAmount
 } from "../utils/expense.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import {
-	addExpense,
-	getExpenseData,
-	getExpenses,
-	getRecentActivity,
-} from "../api/expense.api.ts";
+import { addExpense, getExpenseData, getExpenses, getRecentActivity } from "../api/expense.api.ts";
 import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
 import { minutes } from "../utils/date.utils.ts";
@@ -348,21 +338,31 @@ export function useAddExpense() {
 			});
 		},
 		onSuccess: async (_, addExpenseForm) => {
-			await queryClient.invalidateQueries({
-				queryKey: ["group", addExpenseForm.groupId, "expenses"],
-			});
+			await Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: ["group", addExpenseForm.groupId, "expenses"],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ["group", addExpenseForm.groupId, "balances"],
+				}),
+			]);
 			closeAddExpensePopup();
 		},
 	});
 }
 
-export function useGetExpenses(groupId: string) {
+export function useGetExpenses(groupId?: string) {
 	return useQuery({
 		queryKey: ["group", groupId, "expenses"],
-		queryFn: () => getExpenses(groupId),
+		queryFn: () => {
+			if (!groupId)
+				throw new AppError("Invalid Group ID", ERROR_SEVERITY.LOG);
+			return getExpenses(groupId);
+		},
 		refetchOnWindowFocus: false,
 		staleTime: minutes(5),
 		placeholderData: keepPreviousData,
+		enabled: !!groupId,
 	});
 }
 

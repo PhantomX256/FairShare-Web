@@ -215,3 +215,8 @@ export interface RecentActivity {
 	};
 	user_balance: number;
 }
+
+export interface Balance {
+	member_id: number;
+	balance: number;
+}

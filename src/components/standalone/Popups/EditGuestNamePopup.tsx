@@ -47,7 +47,7 @@ function EditGuestNamePopup() {
 						<input
 							value={guestName}
 							onChange={(e) => setGuestName(e.target.value)}
-							className="bg-white/5 border-none rounded-full py-1.5 px-4 text-lg text-gray-400 focus:ring-1 focus:ring-brand-primary w-full"
+							className="bg-white/5 border-none rounded-xl py-1.5 px-4 text-lg text-gray-400 focus:ring-1 focus:ring-brand-primary w-full"
 							placeholder="Enter a name"
 							type="text"
 						/>

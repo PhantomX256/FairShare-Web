@@ -1,7 +1,11 @@
 import MemberItem from "./MemberItem.tsx";
 import type { Member } from "../../../lib/types/types.ts";
-import { usePopup } from "../../../lib/hooks/context.hooks.ts";
+import { useAuth, usePopup } from "../../../lib/hooks/context.hooks.ts";
 import EditGuestNamePopup from "../Popups/EditGuestNamePopup.tsx";
+import { useGetGroupBalances } from "../../../lib/hooks/balance.hooks.ts";
+import { useEffect } from "react";
+import { toast } from "../../shared/CustomToast.tsx";
+import { useParams } from "react-router-dom";
 
 function MembersSection({
 	members,
@@ -11,13 +15,26 @@ function MembersSection({
 	isFetching: boolean;
 }) {
 	const { editGuestNamePopup, openEditGuestNamePopup } = usePopup();
+	const { groupId } = useParams();
+	const { user } = useAuth();
+
+	const {
+		data: balances,
+		isLoading: fetchingBalances,
+		isError: balanceError,
+	} = useGetGroupBalances(groupId);
+
+	useEffect(() => {
+		if (balanceError)
+			toast({ message: "Failed to fetch balances", success: false });
+	}, [balanceError]);
 
 	return (
 		<div className="text-white xl:col-span-4 space-y-6">
 			{editGuestNamePopup.memberId !== 0 && <EditGuestNamePopup />}
 			<h3 className="mb-3 text-xl font-headline font-bold">Members</h3>
 			<div className="glass-card bg-white/5 border border-white/8 rounded-2xl overflow-hidden divide-y divide-white/8">
-				{isFetching ? (
+				{isFetching && fetchingBalances ? (
 					<>
 						{Array.from({ length: 2 }).map((_, index) => (
 							<div
@@ -33,6 +50,7 @@ function MembersSection({
 						))}
 					</>
 				) : (
+					balances &&
 					members!.map((member) => (
 						<MemberItem
 							onClick={
@@ -45,7 +63,16 @@ function MembersSection({
 											)
 							}
 							key={member.member_id}
+							isCurrentUser={
+								user!.internal_id === member.internal_id
+							}
+							isGuest={!member.user_id}
 							member={member}
+							balance={
+								balances.find(
+									(b) => b.member_id === member.member_id,
+								)!.balance
+							}
 						/>
 					))
 				)}

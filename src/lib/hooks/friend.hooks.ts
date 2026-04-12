@@ -4,10 +4,19 @@ import {
 	getAllSendFriendRequests,
 	getFriendData,
 	modifyFriendRequest,
-	sendFriendRequest
+	sendFriendRequest,
 } from "../api/friend.api.ts";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ReceivedFriendRequest, SentFriendRequest, User } from "../types/types.ts";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
+import type {
+	ReceivedFriendRequest,
+	SentFriendRequest,
+	User,
+} from "../types/types.ts";
 import { minutes } from "../utils/date.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
 

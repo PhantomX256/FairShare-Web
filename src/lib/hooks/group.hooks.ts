@@ -23,14 +23,13 @@ import type {
 } from "../types/types.ts";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import {
-	CreateGroupSchema,
-	GuestName,
-} from "../validators/group.validator.ts";
+import { CreateGroupSchema, GuestName } from "../validators/group.validator.ts";
 import {
 	createStateForEditGroup,
 	getChangedFields,
 } from "../utils/group.utils.ts";
+import { AppError } from "../errors/app.error.ts";
+import { ERROR_SEVERITY } from "../constants/constants.ts";
 
 export function useGetAllGroups() {
 	return useQuery({
@@ -168,13 +167,18 @@ export function useCreateGroup() {
 	});
 }
 
-export function useGetGroupData(groupId: string) {
+export function useGetGroupData(groupId?: string) {
 	return useQuery({
 		queryKey: ["group", groupId],
-		queryFn: () => getGroupData(groupId),
+		queryFn: () => {
+			if (!groupId)
+				throw new AppError("Invalid Group ID", ERROR_SEVERITY.LOG);
+			return getGroupData(groupId);
+		},
 		staleTime: minutes(5),
 		refetchOnWindowFocus: false,
 		placeholderData: keepPreviousData,
+		enabled: !!groupId,
 	});
 }
 
@@ -310,7 +314,7 @@ export function useEditGroupForm(groupData: GroupData) {
 		removeOriginalGuest,
 		removeNewGuest,
 		submitForm,
-		editingGroup
+		editingGroup,
 	};
 }
 

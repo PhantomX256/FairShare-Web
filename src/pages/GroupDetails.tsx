@@ -1,5 +1,5 @@
 import GroupBalanceCard from "../components/standalone/GroupDetails/GroupBalanceCard.tsx";
-import BalanceCard from "../components/standalone/GroupDetails/BalanceCard.tsx";
+import TransactionCard from "../components/standalone/GroupDetails/TransactionCard.tsx";
 import ExpenseItem from "../components/standalone/GroupDetails/ExpenseItem.tsx";
 import MembersSection from "../components/standalone/GroupDetails/MembersSection.tsx";
 import { useGetGroupData } from "../lib/hooks/group.hooks.ts";
@@ -10,22 +10,26 @@ import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
 import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
 import AddExpensePopup from "../components/standalone/Popups/AddExpensePopup.tsx";
 import { useGetExpenses } from "../lib/hooks/expense.hooks.ts";
+import { z } from "zod";
 
 function GroupDetails() {
-	const { groupId } = useParams();
+	const { groupId: preParsedGroupId } = useParams();
+	const result = z.uuid().safeParse(preParsedGroupId);
+	const groupId = result.data;
+
 	const { user } = useAuth();
 	const { editGroupPopup, openEditGroupPopup, addExpensePopup } = usePopup();
 	const {
 		data: groupData,
 		isLoading: fetchingGroupData,
 		isError: fetchError,
-	} = useGetGroupData(groupId!);
+	} = useGetGroupData(groupId);
 
 	const {
 		data: expenses,
 		isLoading: fetchingExpenses,
 		isError: expensesError,
-	} = useGetExpenses(groupId!);
+	} = useGetExpenses(groupId);
 
 	useEffect(() => {
 		if (fetchError)
@@ -34,7 +38,7 @@ function GroupDetails() {
 			toast({ message: "Failed to fetch expenses", success: false });
 	}, [fetchError, expensesError]);
 
-	if (!groupId || !groupData) return null;
+	if (!result.success) return null;
 
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
@@ -64,7 +68,7 @@ function GroupDetails() {
 						groupData!.group.created_by === user!.internal_id && (
 							<button
 								className="text-gray-400 hover:text-white transition-colors"
-								onClick={() => openEditGroupPopup(groupId)}
+								onClick={() => openEditGroupPopup(groupId!)}
 							>
 								<span className="material-symbols-outlined">
 									settings
@@ -80,7 +84,7 @@ function GroupDetails() {
 							isFetching={fetchingGroupData}
 							group={groupData?.group}
 						/>
-						<BalanceCard isFetching={fetchingGroupData} />
+						<TransactionCard isFetching={fetchingGroupData} />
 					</section>
 					<div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
 						<div className="text-white xl:col-span-8 space-y-6">
