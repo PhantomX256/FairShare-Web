@@ -16,10 +16,12 @@ function TransactionCard({ isFetching }: { isFetching: boolean }) {
 	const groupData = queryClient.getQueryData<GroupData>(["group", groupId]);
 
 	const {
-		data: balances,
+		data: groupBalances,
 		isLoading: fetchingBalances,
 		isError,
 	} = useGetGroupBalances(groupId);
+
+	const transactions = groupBalances?.transactions;
 
 	useEffect(() => {
 		if (isError)
@@ -33,7 +35,7 @@ function TransactionCard({ isFetching }: { isFetching: boolean }) {
 			<h3 className="font-headline font-semibold text-sm text-gray-400 uppercase tracking-widest mb-4">
 				Balances
 			</h3>
-			<div className="space-y-4">
+			<div className="space-y-2">
 				{isFetching && fetchingBalances
 					? Array.from({ length: 3 }).map((_, index) => (
 							<div
@@ -47,15 +49,26 @@ function TransactionCard({ isFetching }: { isFetching: boolean }) {
 								<div className="w-10 h-4 bg-white/10 animate-pulse rounded" />
 							</div>
 						))
-					: balances &&
+					: transactions &&
 						groupData &&
-						balances.map((balance) => (
+						transactions.map((transaction, index) => (
 							<TransactionItem
-								key={balance.member_id}
-								balance={balance}
-								member={groupData.members.find(
-									(m) => m.member_id === balance.member_id,
-								)!}
+								key={index}
+								transaction={transaction}
+								toMember={
+									groupData.members.find(
+										(m) =>
+											m.member_id ===
+											transaction.toMemberId,
+									)!
+								}
+								fromMember={
+									groupData.members.find(
+										(m) =>
+											m.member_id ===
+											transaction.fromMemberId,
+									)!
+								}
 							/>
 						))}
 			</div>

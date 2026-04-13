@@ -19,10 +19,12 @@ function MembersSection({
 	const { user } = useAuth();
 
 	const {
-		data: balances,
+		data: groupBalances,
 		isLoading: fetchingBalances,
 		isError: balanceError,
 	} = useGetGroupBalances(groupId);
+
+	const balances = groupBalances?.balances;
 
 	useEffect(() => {
 		if (balanceError)

@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { useParams } from "react-router-dom";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
@@ -19,10 +24,15 @@ import {
 	removeInvolvement,
 	removePayer,
 	sanitiseForm,
-	updateOwedAmount
+	updateOwedAmount,
 } from "../utils/expense.utils.ts";
 import { toast } from "../../components/shared/CustomToast.tsx";
-import { addExpense, getExpenseData, getExpenses, getRecentActivity } from "../api/expense.api.ts";
+import {
+	addExpense,
+	getExpenseData,
+	getExpenses,
+	getRecentActivity,
+} from "../api/expense.api.ts";
 import { ZodError } from "zod";
 import { AppError } from "../errors/app.error.ts";
 import { minutes } from "../utils/date.utils.ts";
