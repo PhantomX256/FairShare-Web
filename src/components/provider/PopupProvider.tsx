@@ -10,6 +10,7 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 		name: "",
 	});
 	const [addExpensePopup, setAddExpensePopup] = useState(false);
+	const [deleteExpensePopup, setDeleteExpensePopup] = useState("");
 
 	return (
 		<PopupContext.Provider
@@ -33,6 +34,10 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 				addExpensePopup,
 				openAddExpensePopup: () => setAddExpensePopup(true),
 				closeAddExpensePopup: () => setAddExpensePopup(false),
+				deleteExpensePopup,
+				openDeleteExpensePopup: (expenseId: string) =>
+					setDeleteExpensePopup(expenseId),
+				closeDeleteExpensePopup: () => setDeleteExpensePopup(""),
 			}}
 		>
 			{children}

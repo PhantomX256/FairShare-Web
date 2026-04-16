@@ -54,6 +54,9 @@ export interface PopupContextType {
 	addExpensePopup: boolean;
 	openAddExpensePopup: () => void;
 	closeAddExpensePopup: () => void;
+	deleteExpensePopup: string;
+	openDeleteExpensePopup: (expenseId: string) => void;
+	closeDeleteExpensePopup: () => void;
 }
 
 export interface Group {
@@ -190,6 +193,7 @@ export interface ExpenseData {
 		owed_amount: number;
 		parts: number;
 		user_id: number | null;
+		is_active: boolean;
 	}[];
 }
 

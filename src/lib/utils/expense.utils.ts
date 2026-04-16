@@ -24,7 +24,6 @@ export class Milli {
 
 	static commaSeparatedFormat(milli: number) {
 		return new Intl.NumberFormat("en-US", {
-			minimumFractionDigits: 2,
 			maximumFractionDigits: 2,
 		}).format(milli / MONEY_SCALE);
 	}
@@ -438,7 +437,6 @@ export function getCommaSeparated(amount: string | number) {
 	if (typeof amount === "string") amount = parseFloat(amount);
 
 	return new Intl.NumberFormat("en-US", {
-		minimumFractionDigits: 2,
 		maximumFractionDigits: 2,
 	}).format(amount);
 }

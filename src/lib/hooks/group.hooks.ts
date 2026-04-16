@@ -324,11 +324,22 @@ export function useEditGroup() {
 
 	return useMutation({
 		mutationFn: editGroup,
-		onSuccess: async (_, editGroupRequest) => {
-			await queryClient.invalidateQueries({
-				queryKey: ["group", editGroupRequest.groupId],
-			});
+		onSuccess: async (_, { groupId }) => {
+			await Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: ["group", groupId, "expenses"],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ["group", groupId, "balances"],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ["group", groupId],
+				}),
+			]);
 			closeEditGroupPopup();
+		},
+		onError: (error) => {
+			toast({ message: error.message, success: false });
 		},
 	});
 }

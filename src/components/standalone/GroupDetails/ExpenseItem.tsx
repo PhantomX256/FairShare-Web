@@ -1,18 +1,19 @@
-import type { Expense, GroupData } from "../../../lib/types/types.ts";
+import type { Expense, GroupData, Member } from "../../../lib/types/types.ts";
 import { getDayMonthAndYear } from "../../../lib/utils/date.utils.ts";
 import { Milli } from "../../../lib/utils/expense.utils.ts";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
-function ExpenseItem({ expense }: { expense: Expense }) {
+function ExpenseItem({
+	expense,
+	paidBy,
+}: {
+	expense: Expense;
+	paidBy: Member;
+}) {
 	const { groupId } = useParams();
 	const queryClient = useQueryClient();
-	const { group, members } = queryClient.getQueryData<GroupData>([
-		"group",
-		groupId!,
-	])!;
-
-	const paidBy = members.find((m) => m.member_id === expense.paid_by[0])!;
+	const { group } = queryClient.getQueryData<GroupData>(["group", groupId!])!;
 
 	return (
 		<Link
@@ -48,13 +49,17 @@ function ExpenseItem({ expense }: { expense: Expense }) {
 				</p>
 				<p
 					className={`text-[10px] uppercase tracking-tighter ${
-						expense.user_balance >= 0
+						expense.user_balance > 0
 							? "text-emerald-500"
-							: "text-red-500"
+							: expense.user_balance === 0
+								? "text-gray-500"
+								: "text-red-500"
 					}`}
 				>
-					Your Balance: {expense.user_balance >= 0 ? "+" : "-"}$
-					{Milli.commaSeparatedFormat(Math.abs(expense.user_balance))}
+					{expense.user_balance !== 0
+						? `Your Balance: ${expense.user_balance > 0 ? "+" : "-"}$
+					${Milli.commaSeparatedFormat(Math.abs(expense.user_balance))}`
+						: "You are not involved"}
 				</p>
 			</div>
 		</Link>

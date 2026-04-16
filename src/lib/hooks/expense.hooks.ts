@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth, usePopup } from "./context.hooks.ts";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
 	keepPreviousData,
 	useMutation,
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
-import type { AddExpenseForm, GroupData, SplitMode } from "../types/types.ts";
+import type {
+	AddExpenseForm,
+	Expense,
+	GroupData,
+	SplitMode,
+} from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
 	addInvolvement,
@@ -29,6 +34,7 @@ import {
 import { toast } from "../../components/shared/CustomToast.tsx";
 import {
 	addExpense,
+	deleteExpense,
 	getExpenseData,
 	getExpenses,
 	getRecentActivity,
@@ -398,5 +404,39 @@ export function useGetRecentActivity() {
 		refetchOnWindowFocus: false,
 		staleTime: minutes(5),
 		placeholderData: keepPreviousData,
+	});
+}
+
+export function useDeleteExpense(groupId: string) {
+	const queryClient = useQueryClient();
+	const { closeDeleteExpensePopup } = usePopup();
+	const navigate = useNavigate();
+
+	return useMutation({
+		mutationFn: deleteExpense,
+		onSuccess: async (_, expenseId) => {
+			toast({ message: "Successfully deleted expense", success: true });
+			await queryClient.invalidateQueries({
+				queryKey: ["group", groupId, "balances"],
+			});
+			const expenses = queryClient.getQueryData<Expense[]>([
+				"group",
+				groupId,
+				"expenses",
+			]);
+
+			if (expenses) {
+				queryClient.setQueryData(
+					["group", groupId, "expenses"],
+					expenses.filter((expense) => expense.id !== expenseId),
+				);
+			}
+
+			closeDeleteExpensePopup();
+			navigate(-1);
+		},
+		onError: (error) => {
+			toast({ message: error.message, success: false });
+		},
 	});
 }

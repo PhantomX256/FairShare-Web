@@ -11,6 +11,8 @@ import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
 import AddExpensePopup from "../components/standalone/Popups/AddExpensePopup.tsx";
 import { useGetExpenses } from "../lib/hooks/expense.hooks.ts";
 import { z } from "zod";
+import { useGetGroupBalances } from "../lib/hooks/balance.hooks.ts";
+import type { Member } from "../lib/types/types.ts";
 
 function GroupDetails() {
 	const { groupId: preParsedGroupId } = useParams();
@@ -31,12 +33,31 @@ function GroupDetails() {
 		isError: expensesError,
 	} = useGetExpenses(groupId);
 
+	const {
+		data: groupBalances,
+		isLoading: fetchingBalances,
+		isError: balanceError,
+	} = useGetGroupBalances(groupId);
+
+	const memberMap = new Map<number, Member>();
+	if (groupData?.members) {
+		groupData.members.forEach((m) => {
+			memberMap.set(m.member_id, m);
+		});
+	}
+
+	const userMemberId =
+		groupData?.members.find((m) => m.internal_id === user!.internal_id)
+			?.member_id ?? 0;
+
 	useEffect(() => {
 		if (fetchError)
 			toast({ message: "Failed to fetch group details", success: false });
 		if (expensesError)
 			toast({ message: "Failed to fetch expenses", success: false });
-	}, [fetchError, expensesError]);
+		if (balanceError)
+			toast({ message: "Failed to fetch balances", success: false });
+	}, [fetchError, expensesError, balanceError]);
 
 	if (!result.success) return null;
 
@@ -83,8 +104,17 @@ function GroupDetails() {
 						<GroupBalanceCard
 							isFetching={fetchingGroupData}
 							group={groupData?.group}
+							userBalance={
+								groupBalances?.balances.find(
+									(b) => b.member_id === userMemberId,
+								)?.balance ?? 0
+							}
 						/>
-						<TransactionCard isFetching={fetchingGroupData} />
+						<TransactionCard
+							isFetching={fetchingGroupData && fetchingBalances}
+							transactions={groupBalances?.transactions}
+							memberMap={memberMap}
+						/>
 					</section>
 					<div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
 						<div className="text-white xl:col-span-8 space-y-6">
@@ -114,6 +144,11 @@ function GroupDetails() {
 										<ExpenseItem
 											key={expense.internal_id}
 											expense={expense}
+											paidBy={
+												memberMap.get(
+													expense.paid_by[0],
+												)!
+											}
 										/>
 									))
 								) : (
@@ -124,8 +159,9 @@ function GroupDetails() {
 							</div>
 						</div>
 						<MembersSection
-							isFetching={fetchingGroupData}
+							isFetching={fetchingGroupData && fetchingBalances}
 							members={groupData?.members}
+							balances={groupBalances?.balances}
 						/>
 					</div>
 				</div>

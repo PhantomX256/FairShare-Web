@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-function ExpenseDetailsHeader() {
+function ExpenseDetailsHeader({
+	openDeleteExpensePopup,
+}: {
+	openDeleteExpensePopup: () => void;
+}) {
 	const navigate = useNavigate();
 
 	return (
@@ -27,7 +31,7 @@ function ExpenseDetailsHeader() {
 						Edit
 					</span>
 				</button>
-				<button className="text-red-400 hover:text-error-dim transition-colors flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-red-400/15">
+				<button onClick={openDeleteExpensePopup} className="text-red-400 hover:text-error-dim transition-colors flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-red-400/15">
 					<span className="material-symbols-outlined text-xl">
 						delete
 					</span>

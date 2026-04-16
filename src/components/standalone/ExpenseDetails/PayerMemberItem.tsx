@@ -24,6 +24,11 @@ function PayerMemberItem({
 				)}
 				<div>
 					<p className="font-bold text-white text-sm">{`${expenseMember.name} ${isCurrentUser ? "(You)" : ""}`}</p>
+					{!expenseMember.is_active && (
+						<p className="text-gray-600 text-[10px] uppercase">
+							No longer a member
+						</p>
+					)}
 				</div>
 			</div>
 			<span className="text-sm font-black text-emerald-500">

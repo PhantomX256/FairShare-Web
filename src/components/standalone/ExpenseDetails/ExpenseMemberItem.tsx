@@ -25,7 +25,12 @@ function ExpenseMemberItem({
 					</div>
 				)}
 				<div>
-					<p className="font-bold text-white">{`${expenseMember.name} ${isCurrentUser ? "(You)" : ""} ${expenseMember.user_id ? "" : "(G)"}`}</p>
+					<p className="font-bold text-white">{`${isCurrentUser ? "You" : expenseMember.name} ${expenseMember.user_id ? "" : "(G)"}`}</p>
+					{!expenseMember.is_active && (
+						<p className="text-gray-600 text-xs uppercase">
+							No longer a member
+						</p>
+					)}
 				</div>
 			</div>
 			<div className="flex flex-col justify-center items-end">

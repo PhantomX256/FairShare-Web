@@ -2,10 +2,11 @@ import { useAuth, usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { getMonthAndYear } from "../../../lib/utils/date.utils.ts";
 import { useGetFriendData } from "../../../lib/hooks/friend.hooks.ts";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Group, User } from "../../../lib/types/types.ts";
+import type { User } from "../../../lib/types/types.ts";
 import { useEffect } from "react";
 import { toast } from "../../shared/CustomToast.tsx";
 import { Link } from "react-router-dom";
+import { useGetAllGroups } from "../../../lib/hooks/group.hooks.ts";
 
 function UserProfilePopup() {
 	const { userProfilePopup, closeUserProfilePopup } = usePopup();
@@ -15,7 +16,12 @@ function UserProfilePopup() {
 	const isCurrentUserProfile = userProfilePopup === user!.id;
 
 	const friends = queryClient.getQueryData<User[]>(["friends"])!;
-	const groups = queryClient.getQueryData<Group[]>(["groups"])!;
+
+	const {
+		data: groups,
+		isLoading: groupLoading,
+		isError: groupError,
+	} = useGetAllGroups();
 
 	const {
 		data: friendData,
@@ -29,7 +35,12 @@ function UserProfilePopup() {
 				message: "Failed to fetch data of friend",
 				success: false,
 			});
-	}, [isError]);
+		if (groupError)
+			toast({
+				message: "Failed to fetch groups",
+				success: false,
+			});
+	}, [isError, groupError]);
 
 	const profile = isCurrentUserProfile
 		? user!
@@ -124,7 +135,7 @@ function UserProfilePopup() {
 							Shared Groups
 						</h3>
 						<div className="flex flex-wrap gap-2">
-							{isLoading
+							{isLoading && groupLoading
 								? Array.from({ length: 3 }).map((_, index) => (
 										<div
 											key={index}
@@ -134,14 +145,17 @@ function UserProfilePopup() {
 											<div className="w-20 h-4 bg-white/8 animate-pulse rounded-md" />
 										</div>
 									))
-								: groups
+								: groups &&
+									friendData &&
+									groups
 										.filter((g) =>
-											friendData!.sharedGroupsIds.some(
+											friendData.sharedGroupsIds.some(
 												(groupId) => g.id === groupId,
 											),
 										)
 										.map((group) => (
 											<Link
+												key={group.internal_id}
 												to={`/groups/${group.id}`}
 												onClick={closeUserProfilePopup}
 												className="flex items-center gap-2 bg-white/5 hover:bg-white/8 border border-white/8 px-3 py-2 rounded-lg cursor-pointer transition-colors group"

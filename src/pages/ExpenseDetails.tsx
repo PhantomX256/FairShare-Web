@@ -8,13 +8,15 @@ import { z } from "zod";
 import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
 import { displaySplitMode } from "../lib/utils/expense.utils.ts";
-import { useAuth } from "../lib/hooks/context.hooks.ts";
+import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
+import DeleteExpensePopup from "../components/standalone/Popups/DeleteExpensePopup.tsx";
 
 function ExpenseDetails() {
 	const { expenseId: preParsedExpenseId } = useParams();
 	const result = z.uuid().safeParse(preParsedExpenseId);
 	const expenseId = result.data;
 	const { user } = useAuth();
+	const { deleteExpensePopup, openDeleteExpensePopup } = usePopup();
 
 	const {
 		data: expenseData,
@@ -33,7 +35,12 @@ function ExpenseDetails() {
 
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
-			<ExpenseDetailsHeader />
+			{deleteExpensePopup && <DeleteExpensePopup />}
+			<ExpenseDetailsHeader
+				openDeleteExpensePopup={() =>
+					openDeleteExpensePopup(expenseData?.group.id ?? "")
+				}
+			/>
 			<div className="flex-1 overflow-y-auto p-8">
 				<div className="max-w-6xl mx-auto space-y-8">
 					<ExpenseHeaderCard

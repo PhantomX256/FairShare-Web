@@ -15,7 +15,12 @@ function MemberItem({
 	balance: number;
 }) {
 	const isBalanceNegative = balance < 0;
-	const color = isBalanceNegative ? "red-500" : "emerald-500";
+	const color =
+		balance !== 0
+			? isBalanceNegative
+				? "red-500"
+				: "emerald-500"
+			: "gray-500";
 
 	return (
 		<>
@@ -41,7 +46,7 @@ function MemberItem({
 						<p
 							className={`text-[9px] text-${color} font-bold uppercase tracking-widest`}
 						>
-							{isBalanceNegative ? "Owes" : "Is Owed"}
+							{balance === 0 ? "Settled" : isBalanceNegative ? "Owes" : "Is Owed"}
 						</p>
 					</div>
 					{onClick && (
@@ -56,7 +61,7 @@ function MemberItem({
 					)}
 				</div>
 				<p className={`text-${color} font-bold text-sm`}>
-					{isBalanceNegative ? "-" : "+"}$
+					{balance !== 0 ? (isBalanceNegative ? "-" : "+") : ""}$
 					{Milli.commaSeparatedFormat(Math.abs(balance))}
 				</p>
 			</div>

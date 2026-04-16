@@ -32,3 +32,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
 	const { data } = await api.get(RECENT_ACTIVITY_URL);
 	return data.recentActivity;
 }
+
+export async function deleteExpense(expenseId: string) {
+	await api.delete(`${EXPENSE_URL}/${expenseId}`);
+}
