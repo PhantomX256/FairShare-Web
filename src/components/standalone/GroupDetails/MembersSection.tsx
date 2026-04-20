@@ -39,7 +39,8 @@ function MembersSection({
 					</>
 				) : (
 					balances &&
-					members!.map((member) => (
+					members &&
+					members.map((member) => (
 						<MemberItem
 							onClick={
 								member.internal_id

@@ -62,12 +62,12 @@ function ExpenseMemberPicker({
 							onValueChange={(value) =>
 								changeOwedAmount(member.member_id, value)
 							}
-							placeholder="0.00"
+							placeholder="0"
 						/>
 					) : owedAmountString !== "" ? (
 						getCommaSeparated(owedAmountString)
 					) : (
-						"0.00"
+						"0"
 					)}
 				</div>
 				{splitMode === "equally" &&

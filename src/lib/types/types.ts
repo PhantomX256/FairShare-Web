@@ -51,12 +51,18 @@ export interface PopupContextType {
 	editGuestNamePopup: { memberId: number; name: string };
 	openEditGuestNamePopup: (memberId: number, name: string) => void;
 	closeEditGuestNamePopup: () => void;
-	addExpensePopup: boolean;
-	openAddExpensePopup: () => void;
+	addExpensePopup: string;
+	openAddExpensePopup: (groupId: string) => void;
 	closeAddExpensePopup: () => void;
 	deleteExpensePopup: string;
 	openDeleteExpensePopup: (expenseId: string) => void;
 	closeDeleteExpensePopup: () => void;
+	confirmationPopup: ConfirmationPopup;
+	openConfirmationPopup: (confirmationPopup: ConfirmationPopup) => void;
+	closeConfirmationPopup: () => void;
+	editExpensePopup: string;
+	openEditExpensePopup: (groupId: string) => void;
+	closeEditExpensePopup: () => void;
 }
 
 export interface Group {
@@ -136,8 +142,7 @@ export interface InvolvedMember {
 
 export type SplitMode = "equally" | "parts" | "specific";
 
-export interface AddExpenseForm {
-	groupId: string;
+export interface ExpenseForm {
 	title: string;
 	icon: string;
 	amount: number;
@@ -184,6 +189,7 @@ export interface ExpenseData {
 		amount: number;
 		split_mode: SplitMode | null;
 		created_at: string;
+		is_modifiable: boolean;
 	};
 	expenseMembers: {
 		member_id: number;
@@ -229,4 +235,13 @@ export interface Transaction {
 	fromMemberId: number;
 	toMemberId: number;
 	amount: number;
+}
+
+export interface ConfirmationPopup {
+	question: string;
+	onYes?: () => void;
+	onNo?: () => void;
+	asyncOnYes?: () => Promise<void>;
+	asyncOnNo?: () => Promise<void>;
+	isPending?: boolean;
 }

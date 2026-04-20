@@ -1,8 +1,11 @@
 import { MONEY_SCALE } from "../constants/constants.ts";
 import type {
-	AddExpenseForm,
 	AddExpenseRequest,
+	ExpenseData,
+	ExpenseForm,
 	InvolvedMember,
+	Member,
+	Payer,
 	SplitMode,
 } from "../types/types.ts";
 import { AddExpenseFormSchema } from "../validators/expense.validator.ts";
@@ -30,28 +33,28 @@ export class Milli {
 }
 
 export function changeAmountAndRecalculateSplits(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	amount: number,
 	amountString: string,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		amount,
 		amountString,
 		// If there aren't multiple payers then set the amount paid
 		// by the payer to the changed amount
-		paidBy: !previousAddExpenseForm.areMultiplePayers
+		paidBy: !previousExpenseForm.areMultiplePayers
 			? [
 					{
-						...previousAddExpenseForm.paidBy[0],
+						...previousExpenseForm.paidBy[0],
 						paidAmount: amount,
 						paidAmountString: amountString,
 					},
 				]
-			: previousAddExpenseForm.paidBy,
+			: previousExpenseForm.paidBy,
 		membersInvolved: getSplits(
-			previousAddExpenseForm.splitMode,
-			previousAddExpenseForm.membersInvolved,
+			previousExpenseForm.splitMode,
+			previousExpenseForm.membersInvolved,
 			amount,
 		),
 	};
@@ -135,29 +138,29 @@ export function getDeltaAdjustedAmount(delta: number, amount: number) {
 }
 
 export function changeAmountAndResetSplits(
-	previousAddExpenseForm: AddExpenseForm,
-): AddExpenseForm {
+	previousExpenseForm: ExpenseForm,
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		amount: 0.0,
 		amountString: "",
 		// If there are multiple payers then don't change anything
 		// If there is only one payer then reset their paidAmount
-		paidBy: !previousAddExpenseForm.areMultiplePayers
+		paidBy: !previousExpenseForm.areMultiplePayers
 			? [
 					{
-						...previousAddExpenseForm.paidBy[0],
+						...previousExpenseForm.paidBy[0],
 						paidAmount: 0.0,
 						paidAmountString: "",
 					},
 				]
-			: previousAddExpenseForm.paidBy,
+			: previousExpenseForm.paidBy,
 		membersInvolved:
 			// In case splitMode is specific don't change anything
 			// In other cases reset the owedAmounts
-			previousAddExpenseForm.splitMode !== "specific"
+			previousExpenseForm.splitMode !== "specific"
 				? [
-						...previousAddExpenseForm.membersInvolved.map(
+						...previousExpenseForm.membersInvolved.map(
 							(memberInvolved) => ({
 								...memberInvolved,
 								owedAmount: 0.0,
@@ -165,41 +168,41 @@ export function changeAmountAndResetSplits(
 							}),
 						),
 					]
-				: previousAddExpenseForm.membersInvolved,
+				: previousExpenseForm.membersInvolved,
 	};
 }
 
 export function changePaymentModeAndResetSplits(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	areMultiplePayers: boolean,
 	currentUserMemberId: number,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		areMultiplePayers: areMultiplePayers,
 		paidBy: [
 			{
 				// If there were multiple payers selected then default to current user
 				// else retain the selected member
 				memberId:
-					previousAddExpenseForm.paidBy.length !== 1
+					previousExpenseForm.paidBy.length !== 1
 						? currentUserMemberId
-						: previousAddExpenseForm.paidBy[0].memberId,
-				paidAmount: previousAddExpenseForm.amount,
-				paidAmountString: previousAddExpenseForm.amountString,
+						: previousExpenseForm.paidBy[0].memberId,
+				paidAmount: previousExpenseForm.amount,
+				paidAmountString: previousExpenseForm.amountString,
 			},
 		],
 	};
 }
 
 export function removePayer(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		paidBy: [
-			...previousAddExpenseForm.paidBy.filter(
+			...previousExpenseForm.paidBy.filter(
 				(payer) => payer.memberId !== memberId,
 			),
 		],
@@ -207,15 +210,15 @@ export function removePayer(
 }
 
 export function changePaidAmount(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
 	paidAmount: number,
 	paidAmountString: string,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		paidBy: [
-			...previousAddExpenseForm.paidBy.filter(
+			...previousExpenseForm.paidBy.filter(
 				(payer) => payer.memberId !== memberId,
 			),
 			{
@@ -228,35 +231,35 @@ export function changePaidAmount(
 }
 
 export function removeInvolvement(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
-): AddExpenseForm {
-	const newMembersInvolved = previousAddExpenseForm.membersInvolved.filter(
+): ExpenseForm {
+	const newMembersInvolved = previousExpenseForm.membersInvolved.filter(
 		(memberInvolved) => memberInvolved.memberId !== memberId,
 	);
 
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		membersInvolved: recalculateEqualSplits(
-			previousAddExpenseForm.amount,
+			previousExpenseForm.amount,
 			newMembersInvolved,
 		),
 	};
 }
 
 export function addInvolvement(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
-): AddExpenseForm {
+): ExpenseForm {
 	const newMembersInvolved = [
-		...previousAddExpenseForm.membersInvolved,
+		...previousExpenseForm.membersInvolved,
 		{ memberId: memberId, owedAmount: 0, owedAmountString: "", parts: 1 },
 	];
 
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		membersInvolved: recalculateEqualSplits(
-			previousAddExpenseForm.amount,
+			previousExpenseForm.amount,
 			newMembersInvolved,
 		),
 	};
@@ -367,27 +370,27 @@ export function decrementPart(
 }
 
 export function deleteInvolvement(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
-		membersInvolved: previousAddExpenseForm.membersInvolved.filter(
+		...previousExpenseForm,
+		membersInvolved: previousExpenseForm.membersInvolved.filter(
 			(m) => m.memberId !== memberId,
 		),
 	};
 }
 
 export function updateOwedAmount(
-	previousAddExpenseForm: AddExpenseForm,
+	previousExpenseForm: ExpenseForm,
 	memberId: number,
 	owedAmount: number,
 	owedAmountString: string,
-): AddExpenseForm {
+): ExpenseForm {
 	return {
-		...previousAddExpenseForm,
+		...previousExpenseForm,
 		membersInvolved: [
-			...previousAddExpenseForm.membersInvolved.filter(
+			...previousExpenseForm.membersInvolved.filter(
 				(m) => m.memberId !== memberId,
 			),
 			{ memberId, owedAmount, owedAmountString, parts: 1 },
@@ -395,22 +398,45 @@ export function updateOwedAmount(
 	};
 }
 
-export function sanitiseForm(addExpenseForm: AddExpenseForm): AddExpenseForm {
+export function addAll(
+	previousExpenseForm: ExpenseForm,
+	members: Member[],
+): ExpenseForm {
+	const newMembersInvolved = members.map(
+		(m): InvolvedMember => ({
+			memberId: m.member_id,
+			owedAmount: 0,
+			owedAmountString: "",
+			parts: 1,
+		}),
+	);
+
 	return {
-		...addExpenseForm,
-		title: addExpenseForm.title.trim(),
-		paidBy: addExpenseForm.paidBy.filter((p) => p.paidAmount !== 0),
-		membersInvolved: addExpenseForm.membersInvolved.filter(
+		...previousExpenseForm,
+		membersInvolved: getSplits(
+			previousExpenseForm.splitMode,
+			newMembersInvolved,
+			previousExpenseForm.amount,
+		),
+	};
+}
+
+export function sanitiseForm(ExpenseForm: ExpenseForm): ExpenseForm {
+	return {
+		...ExpenseForm,
+		title: ExpenseForm.title.trim(),
+		paidBy: ExpenseForm.paidBy.filter((p) => p.paidAmount !== 0),
+		membersInvolved: ExpenseForm.membersInvolved.filter(
 			(m) => m.owedAmount !== 0 || m.parts !== 0,
 		),
 	};
 }
 
 export function validateAddExpenseForm(
-	addExpenseForm: AddExpenseForm,
+	ExpenseForm: ExpenseForm,
 ): AddExpenseRequest {
 	const addExpenseFormZod: AddExpenseRequest = {
-		...AddExpenseFormSchema.parse(addExpenseForm),
+		...AddExpenseFormSchema.parse(ExpenseForm),
 		isTransaction: false,
 	};
 
@@ -439,4 +465,71 @@ export function getCommaSeparated(amount: string | number) {
 	return new Intl.NumberFormat("en-US", {
 		maximumFractionDigits: 2,
 	}).format(amount);
+}
+
+export function getDefaultExpenseForm(
+	members: Member[],
+	currentUserMemberId: number,
+): ExpenseForm {
+	return {
+		title: "",
+		icon: "payments",
+		amount: 0.0,
+		amountString: "",
+		areMultiplePayers: false,
+		paidBy: [
+			{
+				memberId: currentUserMemberId,
+				paidAmount: 0.0,
+				paidAmountString: "",
+			},
+		],
+		splitMode: "equally",
+		membersInvolved: members.map((member) => ({
+			memberId: member.member_id,
+			owedAmount: 0.0,
+			owedAmountString: "",
+			parts: 1,
+		})),
+	};
+}
+
+export function getExpenseFormDataFromExpenseData(
+	expenseData: ExpenseData,
+): ExpenseForm {
+	let numberPayers = 0;
+
+	const paidBy: Payer[] = [];
+	const membersInvolved: InvolvedMember[] = [];
+
+	for (const expenseMember of expenseData.expenseMembers) {
+		if (expenseMember.paid_amount > 0) {
+			numberPayers++;
+			paidBy.push({
+				memberId: expenseMember.member_id,
+				paidAmount: expenseMember.paid_amount,
+				paidAmountString: Milli.formatMilli(expenseMember.paid_amount),
+			});
+		}
+
+		if (expenseMember.owed_amount > 0) {
+			membersInvolved.push({
+				memberId: expenseMember.member_id,
+				owedAmount: expenseMember.owed_amount,
+				owedAmountString: Milli.formatMilli(expenseMember.owed_amount),
+				parts: expenseMember.parts,
+			});
+		}
+	}
+
+	return {
+		title: expenseData.expense.title,
+		icon: expenseData.expense.icon,
+		amount: expenseData.expense.amount,
+		amountString: Milli.formatMilli(expenseData.expense.amount),
+		areMultiplePayers: numberPayers > 1,
+		splitMode: expenseData.expense.split_mode ?? "equally",
+		paidBy,
+		membersInvolved,
+	};
 }

@@ -1,22 +1,42 @@
 import { usePopup } from "../../../lib/hooks/context.hooks.ts";
-import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import type { GroupData } from "../../../lib/types/types.ts";
 import MemberPicker from "../../shared/MemberPicker.tsx";
 import ExpenseMemberPicker from "../../shared/ExpenseMemberPicker.tsx";
-import { useAddExpenseForm } from "../../../lib/hooks/expense.hooks.ts";
+import { useExpenseForm } from "../../../lib/hooks/expense.hooks.ts";
 import { Milli } from "../../../lib/utils/expense.utils.ts";
 import ExpenseIconSelect from "../../shared/ExpenseIconSelect.tsx";
 import { CurrencyInput } from "react-currency-input-field";
+import { useEffect } from "react";
+import { toast } from "../../shared/CustomToast.tsx";
+import { useGetGroupData } from "../../../lib/hooks/group.hooks.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import type { ExpenseData } from "../../../lib/types/types.ts";
 
-function AddExpensePopup() {
-	const { closeAddExpensePopup } = usePopup();
-	const { groupId } = useParams();
+function ExpensePopup() {
+	const { expenseId } = useParams();
 	const queryClient = useQueryClient();
-	const { members } = queryClient.getQueryData<GroupData>([
-		"group",
-		groupId!,
-	])!;
+
+	const expenseData = queryClient.getQueryData<ExpenseData>([
+		"expense",
+		expenseId,
+	]);
+
+	const { addExpensePopup, closeAddExpensePopup } = usePopup();
+
+	const {
+		data: groupData,
+		isLoading: fetchingGroupData,
+		isError: isFetchGroupDataError,
+		error: fetchGroupDataError,
+	} = useGetGroupData(addExpensePopup);
+
+	const members = groupData?.members;
+
+	useEffect(() => {
+		if (isFetchGroupDataError)
+			toast({ message: fetchGroupDataError.message, success: false });
+	}, [isFetchGroupDataError, fetchGroupDataError]);
+
 	const {
 		form,
 		remainingBalance,
@@ -30,20 +50,21 @@ function AddExpensePopup() {
 		changePayer,
 		changePayerAmount,
 		changeInvolvement,
+		selectAll,
 		addPart,
 		removePart,
 		changeOwedAmount,
 		remainingOwedBalance,
 		isAdding,
 		submitForm,
-	} = useAddExpenseForm();
+	} = useExpenseForm(expenseData);
 
 	return (
 		<div className="fixed top-0 left-0 flex items-center justify-center backdrop-blur-sm h-screen w-screen z-40 bg-black/30">
 			<div className="glass-panel w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
 				<div className="px-5 py-3 flex items-center justify-between border-b border-white/5">
 					<h2 className="text-xl font-extrabold tracking-tight text-white">
-						Add New Expense
+						{expenseData ? "Edit Expense" : "Add New Expense"}
 					</h2>
 					<button
 						onClick={closeAddExpensePopup}
@@ -114,27 +135,41 @@ function AddExpensePopup() {
 							</div>
 						</div>
 						<div className="bg-white/5 rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden mb-1">
-							{members.map((member) => (
-								<MemberPicker
-									key={member.member_id}
-									member={member}
-									isSelected={isPayerSelected(
-										member.member_id,
-									)}
-									areMultiplePayers={form.areMultiplePayers}
-									changePayer={() =>
-										changePayer(member.member_id)
-									}
-									paidAmountString={
-										form.paidBy.find(
-											(payer) =>
-												member.member_id ===
-												payer.memberId,
-										)?.paidAmountString ?? ""
-									}
-									changePayerAmount={changePayerAmount}
-								/>
-							))}
+							{fetchingGroupData
+								? Array.from({ length: 3 }).map((_, index) => (
+										<div key={index}>
+											<div className="flex items-center justify-between w-full">
+												<div className="size-10 bg-white/10 animate-pulse" />
+												<div className="w-20 h-5 bg-white/10 animate-pulse" />
+											</div>
+											<div className="size-5 bg-white/10 animate-pulse" />
+										</div>
+									))
+								: members?.map((member) => (
+										<MemberPicker
+											key={member.member_id}
+											member={member}
+											isSelected={isPayerSelected(
+												member.member_id,
+											)}
+											areMultiplePayers={
+												form.areMultiplePayers
+											}
+											changePayer={() =>
+												changePayer(member.member_id)
+											}
+											paidAmountString={
+												form.paidBy.find(
+													(payer) =>
+														member.member_id ===
+														payer.memberId,
+												)?.paidAmountString ?? ""
+											}
+											changePayerAmount={
+												changePayerAmount
+											}
+										/>
+									))}
 						</div>
 						{remainingBalance !== 0 && (
 							<p className="text-slate-500 text-end mt-0 text-sm">{`Remaining: $${Milli.formatMilli(remainingBalance)}`}</p>
@@ -166,40 +201,68 @@ function AddExpensePopup() {
 						</div>
 					</section>
 					<section className="space-y-6">
-						<label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-1">
-							Split with
-						</label>
+						<div className="flex items-center justify-between">
+							<label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">
+								Split with
+							</label>
+							{form.splitMode !== "specific" && (
+								<p
+									onClick={selectAll}
+									className="text-white text-xs cursor-pointer hover:text-primary transition-all duration-300"
+								>
+									Select All
+								</p>
+							)}
+						</div>
 						<div className="bg-white/5 rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden">
-							{members.map((member) => {
-								const involved = form.membersInvolved.find(
-									(m) => m.memberId === member.member_id,
-								);
+							{fetchingGroupData
+								? Array.from({ length: 3 }).map((_, index) => (
+										<div key={index}>
+											<div className="flex items-center justify-between w-full">
+												<div className="size-10 bg-white/10 animate-pulse" />
+												<div className="w-20 h-5 bg-white/10 animate-pulse" />
+											</div>
+											<div className="size-5 bg-white/10 animate-pulse" />
+										</div>
+									))
+								: members?.map((member) => {
+										const involved =
+											form.membersInvolved.find(
+												(m) =>
+													m.memberId ===
+													member.member_id,
+											);
 
-								return (
-									<ExpenseMemberPicker
-										key={member.member_id}
-										member={member}
-										isSelected={isMemberInvolved(
-											member.member_id,
-										)}
-										changeInvolvement={() =>
-											changeInvolvement(member.member_id)
-										}
-										owedAmountString={
-											involved?.owedAmountString ?? ""
-										}
-										splitMode={form.splitMode}
-										parts={involved?.parts ?? 0}
-										addPart={() =>
-											addPart(member.member_id)
-										}
-										removePart={() =>
-											removePart(member.member_id)
-										}
-										changeOwedAmount={changeOwedAmount}
-									/>
-								);
-							})}
+										return (
+											<ExpenseMemberPicker
+												key={member.member_id}
+												member={member}
+												isSelected={isMemberInvolved(
+													member.member_id,
+												)}
+												changeInvolvement={() =>
+													changeInvolvement(
+														member.member_id,
+													)
+												}
+												owedAmountString={
+													involved?.owedAmountString ??
+													""
+												}
+												splitMode={form.splitMode}
+												parts={involved?.parts ?? 0}
+												addPart={() =>
+													addPart(member.member_id)
+												}
+												removePart={() =>
+													removePart(member.member_id)
+												}
+												changeOwedAmount={
+													changeOwedAmount
+												}
+											/>
+										);
+									})}
 						</div>
 						{remainingOwedBalance !== 0 && (
 							<p className="text-slate-500 text-end mt-0 text-sm">{`Remaining: $${Milli.formatMilli(remainingOwedBalance)}`}</p>
@@ -212,7 +275,11 @@ function AddExpensePopup() {
 						className="w-full bg-primary hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-md shadow-xl shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
 					>
 						<span className="material-symbols-outlined">money</span>
-						{isAdding ? "Adding..." : "Add Expense"}
+						{isAdding
+							? "Adding..."
+							: expenseData
+								? "Edit Expense"
+								: "Add Expense"}
 					</button>
 				</div>
 			</div>
@@ -220,4 +287,4 @@ function AddExpensePopup() {
 	);
 }
 
-export default AddExpensePopup;
+export default ExpensePopup;

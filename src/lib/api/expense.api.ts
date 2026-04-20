@@ -1,7 +1,7 @@
 import type {
-	AddExpenseForm,
 	Expense,
 	ExpenseData,
+	ExpenseForm,
 	RecentActivity,
 } from "../types/types.ts";
 import { validateAddExpenseForm } from "../utils/expense.utils.ts";
@@ -18,7 +18,7 @@ export async function getExpenses(groupId: string): Promise<Expense[]> {
 	return data.expenses;
 }
 
-export async function addExpense(addExpenseForm: AddExpenseForm) {
+export async function addExpense(addExpenseForm: ExpenseForm) {
 	const addExpenseRequest = validateAddExpenseForm(addExpenseForm);
 	await api.post(EXPENSE_URL, { addExpenseRequest });
 }

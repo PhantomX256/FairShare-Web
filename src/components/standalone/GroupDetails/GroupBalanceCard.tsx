@@ -1,19 +1,18 @@
 import type { Group } from "../../../lib/types/types.ts";
 import { getMonthAndYear } from "../../../lib/utils/date.utils.ts";
-import { usePopup } from "../../../lib/hooks/context.hooks.ts";
 import { Milli } from "../../../lib/utils/expense.utils.ts";
 
 function GroupBalanceCard({
 	group,
 	isFetching,
 	userBalance,
+	openAddExpensePopup,
 }: {
 	group?: Group;
 	isFetching: boolean;
 	userBalance: number;
+	openAddExpensePopup: () => void;
 }) {
-	const { openAddExpensePopup } = usePopup();
-
 	const isUserBalanceNegative = userBalance < 0;
 
 	return (

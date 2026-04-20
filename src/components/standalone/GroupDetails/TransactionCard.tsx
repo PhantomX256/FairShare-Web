@@ -1,7 +1,11 @@
 import TransactionItem from "./TransactionItem.tsx";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import type { GroupData, Member, Transaction } from "../../../lib/types/types.ts";
+import type {
+	GroupData,
+	Member,
+	Transaction,
+} from "../../../lib/types/types.ts";
 
 function TransactionCard({
 	isFetching,

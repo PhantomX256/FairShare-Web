@@ -10,36 +10,52 @@ import { toast } from "../components/shared/CustomToast.tsx";
 import { displaySplitMode } from "../lib/utils/expense.utils.ts";
 import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
 import DeleteExpensePopup from "../components/standalone/Popups/DeleteExpensePopup.tsx";
+import ExpensePopup from "../components/standalone/Popups/ExpensePopup.tsx";
 
 function ExpenseDetails() {
 	const { expenseId: preParsedExpenseId } = useParams();
 	const result = z.uuid().safeParse(preParsedExpenseId);
 	const expenseId = result.data;
 	const { user } = useAuth();
-	const { deleteExpensePopup, openDeleteExpensePopup } = usePopup();
+	const {
+		deleteExpensePopup,
+		openDeleteExpensePopup,
+		addExpensePopup,
+		openAddExpensePopup,
+	} = usePopup();
 
 	const {
 		data: expenseData,
 		isLoading: isExpenseLoading,
 		isError: expenseError,
+		error,
 	} = useGetExpenseData(expenseId);
 
 	useEffect(() => {
-		if (expenseError)
-			toast({ message: "Error fetching expense data", success: false });
-	}, [expenseError]);
+		if (expenseError) toast({ message: error.message, success: false });
+	}, [expenseError, error]);
 
-	if (!result.success) {
+	if (
+		!result.success ||
+		expenseError ||
+		(!isExpenseLoading && !expenseData)
+	) {
 		return null;
 	}
 
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
 			{deleteExpensePopup && <DeleteExpensePopup />}
+			{addExpensePopup && <ExpensePopup />}
 			<ExpenseDetailsHeader
+				isFetching={isExpenseLoading}
+				openEditExpensePopup={() =>
+					openAddExpensePopup(expenseData?.group.id ?? "")
+				}
 				openDeleteExpensePopup={() =>
 					openDeleteExpensePopup(expenseData?.group.id ?? "")
 				}
+				isModifiable={expenseData?.expense.is_modifiable ?? true}
 			/>
 			<div className="flex-1 overflow-y-auto p-8">
 				<div className="max-w-6xl mx-auto space-y-8">
@@ -59,7 +75,7 @@ function ExpenseDetails() {
 								) : (
 									<div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-brand-border">
 										<span className="text-[10px] font-bold text-primary uppercase tracking-widest">
-											{expenseData!.expense.split_mode
+											{expenseData?.expense.split_mode
 												? displaySplitMode(
 														expenseData!.expense
 															.split_mode,
@@ -85,7 +101,7 @@ function ExpenseDetails() {
 												</div>
 											),
 										)
-									: expenseData!.expenseMembers
+									: expenseData?.expenseMembers
 											.filter((m) => m.owed_amount > 0)
 											.map((expenseMember) => (
 												<ExpenseMemberItem

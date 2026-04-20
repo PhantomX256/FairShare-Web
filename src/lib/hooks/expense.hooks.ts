@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth, usePopup } from "./context.hooks.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -8,13 +8,15 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import type {
-	AddExpenseForm,
 	Expense,
+	ExpenseData,
+	ExpenseForm,
 	GroupData,
 	SplitMode,
 } from "../types/types.ts";
 import { ExpenseAmount } from "../validators/expense.validator.ts";
 import {
+	addAll,
 	addInvolvement,
 	changeAmountAndRecalculateSplits,
 	changeAmountAndResetSplits,
@@ -22,6 +24,8 @@ import {
 	changePaymentModeAndResetSplits,
 	decrementPart,
 	deleteInvolvement,
+	getDefaultExpenseForm,
+	getExpenseFormDataFromExpenseData,
 	getSplits,
 	incrementPart,
 	involveMemberAndRecalculatePartSplits,
@@ -47,40 +51,40 @@ import { ERROR_SEVERITY } from "../constants/constants.ts";
 // I realize this could be very retarded
 // I could've very simply merged paidBy and membersInvolved
 // But oh well it's too late now maybe a fix for a later date
-export function useAddExpenseForm() {
+export function useExpenseForm(expenseData?: ExpenseData) {
 	const { user } = useAuth();
 	const { groupId } = useParams();
 	const queryClient = useQueryClient();
-	const { members } = queryClient.getQueryData<GroupData>([
-		"group",
-		groupId!,
-	])!;
-	const currentUserMemberId = members.find(
-		(member) => member.internal_id === user!.internal_id,
-	)!.member_id;
 	const { mutateAsync: addExpense, isPending: isAdding } = useAddExpense();
 
-	const [form, setForm] = useState<AddExpenseForm>({
-		groupId: groupId!,
-		title: "",
-		icon: "payments",
-		amount: 0.0,
-		amountString: "",
-		areMultiplePayers: false,
-		paidBy: [
-			{
-				memberId: currentUserMemberId,
-				paidAmount: 0.0,
-				paidAmountString: "",
-			},
-		],
-		splitMode: "equally",
-		membersInvolved: members.map((member) => ({
-			memberId: member.member_id,
-			owedAmount: 0.0,
-			owedAmountString: "",
-			parts: 1,
-		})),
+	const groupData = queryClient.getQueryData<GroupData>(["group", groupId!]);
+
+	const members = groupData?.members || [];
+
+	const currentUserMemberId = members.find(
+		(member) => member.internal_id === user!.internal_id,
+	)?.member_id;
+
+	const [form, setForm] = useState<ExpenseForm>(() => {
+		if (expenseData) {
+			return getExpenseFormDataFromExpenseData(expenseData);
+		}
+
+		if (members.length > 0 && currentUserMemberId !== undefined) {
+			return getDefaultExpenseForm(members, currentUserMemberId);
+		}
+
+		// Absolute fallback (should never hit if UI guards rendering properly)
+		return {
+			title: "",
+			icon: "payments",
+			amount: 0.0,
+			amountString: "",
+			areMultiplePayers: false,
+			paidBy: [],
+			splitMode: "equally",
+			membersInvolved: [],
+		};
 	});
 
 	const totalPaid = useMemo(
@@ -109,9 +113,7 @@ export function useAddExpenseForm() {
 		[form.amount, totalOwedAmount],
 	);
 
-	useEffect(() => {
-		console.log(form);
-	}, [form]);
+	const allMembersSelected = form.membersInvolved.length === members.length;
 
 	function isPayerSelected(memberId: number) {
 		return form.paidBy.some((payer) => payer.memberId === memberId);
@@ -158,7 +160,7 @@ export function useAddExpenseForm() {
 				changePaymentModeAndResetSplits(
 					prev,
 					areMultiplePayers,
-					currentUserMemberId,
+					currentUserMemberId ?? 0,
 				),
 			);
 			// Else we just switch modes and not tamper with paidBy
@@ -310,6 +312,17 @@ export function useAddExpenseForm() {
 		await addExpense(sanitisedForm);
 	}
 
+	function selectAll() {
+		if (!allMembersSelected) {
+			setForm((prev) => addAll(prev, members));
+		} else {
+			setForm((prev) => ({
+				...prev,
+				membersInvolved: [],
+			}));
+		}
+	}
+
 	return {
 		form,
 		remainingBalance,
@@ -323,6 +336,7 @@ export function useAddExpenseForm() {
 		changePayer,
 		changePayerAmount,
 		changeInvolvement,
+		selectAll,
 		addPart,
 		removePart,
 		changeOwedAmount,

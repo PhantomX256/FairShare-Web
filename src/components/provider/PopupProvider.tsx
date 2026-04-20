@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react";
 import { PopupContext } from "../context/PopupContext.ts";
+import type { ConfirmationPopup } from "../../lib/types/types.ts";
 
 export function PopupProvider({ children }: { children: ReactNode }) {
 	const [userProfilePopup, setUserProfilePopup] = useState("");
@@ -9,8 +10,13 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 		memberId: 0,
 		name: "",
 	});
-	const [addExpensePopup, setAddExpensePopup] = useState(false);
+	const [addExpensePopup, setAddExpensePopup] = useState("");
 	const [deleteExpensePopup, setDeleteExpensePopup] = useState("");
+	const [editExpensePopup, setEditExpensePopup] = useState("");
+	const [confirmationPopup, setConfirmationPopup] =
+		useState<ConfirmationPopup>({
+			question: "",
+		});
 
 	return (
 		<PopupContext.Provider
@@ -32,12 +38,22 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 				closeEditGuestNamePopup: () =>
 					setEditGuestNamePopup({ memberId: 0, name: "" }),
 				addExpensePopup,
-				openAddExpensePopup: () => setAddExpensePopup(true),
-				closeAddExpensePopup: () => setAddExpensePopup(false),
+				openAddExpensePopup: (groupId: string) =>
+					setAddExpensePopup(groupId),
+				closeAddExpensePopup: () => setAddExpensePopup(""),
 				deleteExpensePopup,
 				openDeleteExpensePopup: (expenseId: string) =>
 					setDeleteExpensePopup(expenseId),
 				closeDeleteExpensePopup: () => setDeleteExpensePopup(""),
+				editExpensePopup,
+				openEditExpensePopup: (expenseId: string) =>
+					setEditExpensePopup(expenseId),
+				closeEditExpensePopup: () => setEditExpensePopup(""),
+				confirmationPopup,
+				openConfirmationPopup: (confirmationPopup: ConfirmationPopup) =>
+					setConfirmationPopup(confirmationPopup),
+				closeConfirmationPopup: () =>
+					setConfirmationPopup({ question: "" }),
 			}}
 		>
 			{children}

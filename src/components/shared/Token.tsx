@@ -1,3 +1,5 @@
+import { usePopup } from "../../lib/hooks/context.hooks.ts";
+
 function Token({
 	isCurrentUser,
 	avatar_url,
@@ -9,6 +11,8 @@ function Token({
 	name: string;
 	onRemove: () => void;
 }) {
+	const { openConfirmationPopup } = usePopup();
+
 	return (
 		<div
 			className={`flex items-center gap-2 ${isCurrentUser ? "bg-primary/20 border-primary/30" : "bg-white/3 border-white/8"} border  pl-1.5 pr-2 py-1.5 rounded-full`}
@@ -31,7 +35,13 @@ function Token({
 			</span>
 			{!isCurrentUser && (
 				<button
-					onClick={onRemove}
+					onClick={() =>
+						openConfirmationPopup({
+							question:
+								"Are you sure you want to remove this member from the group?",
+							onYes: onRemove,
+						})
+					}
 					className={`${isCurrentUser ? "text-primary" : "text-slate-400"} hover:text-white flex items-center justify-center transition-all`}
 				>
 					<span className="material-symbols-outlined text-[14px]">

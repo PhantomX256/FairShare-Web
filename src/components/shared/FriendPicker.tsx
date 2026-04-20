@@ -1,4 +1,5 @@
 import type { User } from "../../lib/types/types.ts";
+import { usePopup } from "../../lib/hooks/context.hooks.ts";
 
 function FriendPicker({
 	friend,
@@ -11,11 +12,17 @@ function FriendPicker({
 	selectFriend: (friend: User) => void;
 	unSelectFriend: (friend: User) => void;
 }) {
+	const { openConfirmationPopup } = usePopup();
+
 	return (
 		<div
 			onClick={() =>
 				isSelected
-					? unSelectFriend(friend)
+					? openConfirmationPopup({
+							question:
+								"Are you sure you want to remove this member from the group?",
+							onYes: () => unSelectFriend(friend),
+						})
 					: selectFriend(friend)
 			}
 			className="p-4 flex items-center justify-between hover:bg-white/[0.07] transition-all cursor-pointer group"

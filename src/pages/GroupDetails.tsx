@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { toast } from "../components/shared/CustomToast.tsx";
 import { useAuth, usePopup } from "../lib/hooks/context.hooks.ts";
 import EditGroupPopup from "../components/standalone/Popups/EditGroupPopup.tsx";
-import AddExpensePopup from "../components/standalone/Popups/AddExpensePopup.tsx";
+import ExpensePopup from "../components/standalone/Popups/ExpensePopup.tsx";
 import { useGetExpenses } from "../lib/hooks/expense.hooks.ts";
 import { z } from "zod";
 import { useGetGroupBalances } from "../lib/hooks/balance.hooks.ts";
@@ -20,7 +20,12 @@ function GroupDetails() {
 	const groupId = result.data;
 
 	const { user } = useAuth();
-	const { editGroupPopup, openEditGroupPopup, addExpensePopup } = usePopup();
+	const {
+		editGroupPopup,
+		openEditGroupPopup,
+		addExpensePopup,
+		openAddExpensePopup,
+	} = usePopup();
 	const {
 		data: groupData,
 		isLoading: fetchingGroupData,
@@ -64,7 +69,7 @@ function GroupDetails() {
 	return (
 		<main className="flex-1 flex flex-col max-h-screen">
 			{editGroupPopup && <EditGroupPopup />}
-			{addExpensePopup && <AddExpensePopup />}
+			{addExpensePopup && <ExpensePopup />}
 			<header className="h-16 border-b border-white/8 flex items-center justify-between px-8 shrink-0 backdrop-blur-md">
 				<h2 className="text-white font-headline font-semibold text-lg">
 					Group Details
@@ -108,6 +113,9 @@ function GroupDetails() {
 								groupBalances?.balances.find(
 									(b) => b.member_id === userMemberId,
 								)?.balance ?? 0
+							}
+							openAddExpensePopup={() =>
+								openAddExpensePopup(groupId ?? "")
 							}
 						/>
 						<TransactionCard
